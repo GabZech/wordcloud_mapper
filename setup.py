@@ -10,7 +10,13 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = [
+    'pyshp>=2.3',
+    'wordcloud>=1.7',
+    'numpy>=1.23',
+    'matplotlib>=3.5',
+    'descartes>=1.1'
+]
 
 test_requirements = ['pytest>=3', ]
 
@@ -19,14 +25,14 @@ setup(
     author_email='g.dev@posteo.net',
     python_requires='>=3.6',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10'
     ],
     description="A package for creating wordcloud maps in Python.",
     install_requires=requirements,

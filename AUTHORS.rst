@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Gabriel da Silva Zech <g.dev@posteo.net>
+* Gabriel da Silva Zech <g.inbox@posteo.net>
 
 Contributors
 ------------

@@ -23,7 +23,7 @@ test_requirements = ['pytest>=3', ]
 
 setup(
     author="Gabriel da Silva Zech",
-    author_email='g.dev@posteo.net',
+    author_email='g.inbox@posteo.net',
     python_requires='>=3.6',
     classifiers=[
         'Development Status :: 3 - Alpha',

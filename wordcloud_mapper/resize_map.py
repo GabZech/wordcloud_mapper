@@ -18,5 +18,5 @@ def resize_map(fig, scale):
     width, height = fig.get_size_inches()*scale
     fig.set_size_inches(width, height)
     dpi = fig.dpi
-    print(f"Figure resized to width {int(width*dpi)}px\
-         and height {int(height*dpi)}px.")
+    print(f"Figure resized to width {int(width*dpi)}px \
+and height {int(height*dpi)}px.")

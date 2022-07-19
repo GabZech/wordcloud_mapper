@@ -40,7 +40,7 @@ def download_shapefiles(map_scale="10M",
 
     """
     url = f"https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/\
-        NUTS_RG_{map_scale}_{year}_{coord_system}.shp.zip"
+NUTS_RG_{map_scale}_{year}_{coord_system}.shp.zip"
     shapefiles = Reader(url)
 
     return shapefiles
@@ -516,7 +516,7 @@ def wordcloud_map(df,
     fig.set_size_inches(width * scale, height * scale)
     dpi = fig.dpi
     print(
-        f"Figure successfully produced with width {int(width*dpi)}px\
-             and height {int(height*dpi)}px.")
+        f"Figure successfully produced with width {int(width*dpi)}px \
+and height {int(height*dpi)}px.")
 
     return fig

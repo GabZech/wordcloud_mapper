@@ -15,7 +15,8 @@ requirements = [
     'wordcloud>=1.7',
     'numpy>=1.23',
     'matplotlib>=3.5',
-    'descartes>=1.1'
+    'descartes>=1.1',
+    'pandas>=1.0'
 ]
 
 test_requirements = ['pytest>=3', ]

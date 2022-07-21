@@ -1,5 +1,5 @@
 from pandas import read_csv
-
+from importlib import resources
 
 def load_companies(country="DEU"):
     """
@@ -20,6 +20,5 @@ def load_companies(country="DEU"):
     DataFrame
         The DataFrame corresponding to the chosen country.
     """
-    df = read_csv(f"./data/companies_{country}.csv", encoding='utf-8')
-
-    return df
+    with resources.path("wordcloud_mapper.data", f"companies_{country}.csv") as df:
+        return read_csv(df, encoding='utf-8')

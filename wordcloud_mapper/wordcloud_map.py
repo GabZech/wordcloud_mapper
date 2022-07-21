@@ -373,7 +373,8 @@ def plot_region(mask,
 
     # create wordcloud
     wc = WordCloud(mask=mask,
-                   background_color=None, mode="RGBA",  # transp background
+                   background_color=None,
+                   mode="RGBA",
                    scale=rendering_quality,
                    color_func=func,
                    min_font_size=min_font_size,
@@ -509,11 +510,20 @@ def wordcloud_map(df,
                             shaperecord.record.NUTS_ID)
             bbox = get_bbox_region(shaperecord)
             plot_contour(shaperecord, ax, bbox, resolution=100)
-            plot_region(mask, data, ax, bbox, colour_func, rendering_quality)
+            plot_region(mask=mask, data=data, ax=ax, bbox=bbox,
+                        colour_func=colour_func,
+                        rendering_quality=rendering_quality,
+                        min_font_size=min_font_size,
+                        max_font_size=max_font_size,
+                        max_words=max_words,
+                        relative_scaling=relative_scaling,
+                        prefer_horizontal=prefer_horizontal,
+                        repeat=repeat
+                        )
 
     # get current size and multiply that by the given scale
-    width, height = fig.get_size_inches()
-    fig.set_size_inches(width * scale, height * scale)
+    width, height = fig.get_size_inches()*scale
+    fig.set_size_inches(width, height)
     dpi = fig.dpi
     print(
         f"Figure successfully produced with width {int(width*dpi)}px \

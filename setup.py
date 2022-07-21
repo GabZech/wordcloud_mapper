@@ -23,10 +23,10 @@ test_requirements = ['pytest>=3', ]
 
 setup(
     author="Gabriel da Silva Zech",
-    author_email='g.inbox@posteo.net',
-    python_requires='>=3.6',
+    author_email='g.dev@posteo.net',
+    python_requires='>=3.8',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',

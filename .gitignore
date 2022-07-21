@@ -1,5 +1,5 @@
 wordcloud_mapper/test.py
-wordcloud_mapper/map.png
+wordcloud_mapper/*.png
 Pipfile
 Pipfile.lock
 

@@ -1,7 +1,5 @@
 wordcloud_mapper/test.py
 wordcloud_mapper/*.png
-Pipfile
-Pipfile.lock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

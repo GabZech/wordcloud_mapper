@@ -39,6 +39,7 @@ setup(
     install_requires=requirements,
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
+    long_description_content_type="text/x-rst",
     include_package_data=True,
     keywords='wordcloud_mapper',
     name='wordcloud_mapper',
@@ -46,10 +47,10 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/GabZech/wordcloud_mapper',
-    project_urls = {
+    project_urls={
         'Instructions and usage': 'https://gabzech.github.io/wordcloud_mapper',
         'Documentation': 'https://wordcloud-mapper.readthedocs.io/'
-    }
-    version='0.0.2',
+    },
+    version='0.1.0',
     zip_safe=False,
 )

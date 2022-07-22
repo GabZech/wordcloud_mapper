@@ -3,7 +3,7 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
-include wordcloud_mapper/data *
+include wordcloud_mapper/data/*.csv
 
 recursive-include tests *
 recursive-exclude * __pycache__

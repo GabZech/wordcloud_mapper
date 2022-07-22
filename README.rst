@@ -13,7 +13,9 @@ wordcloud_mapper
         :target: https://wordcloud-mapper.readthedocs.io/en/latest/?version=latest
         :alt: Documentation Status
 
-`wordcloud_mapper` is a Python package that allows one to **create wordclouds shaped like regions in a map**. Such visualisations are especially useful when communicating sets of data that consist of many different observations and each observation is attributed to a specific region and size of occurrence. Take the example below, a dataset containing the name of the 100 biggest companies (in terms of estimated number of employees) for each region in Germany and Italy in 2019.
+`wordcloud_mapper` is a Python package that allows one to **create wordclouds shaped like regions on a map**. 
+
+Such visualisations are especially useful when communicating sets of data that consist of many different observations and each observation is attributed to a specific region and size of occurrence. Take the example below, a dataset containing the name of the biggest companies (in terms of estimated number of employees) for each region in Germany and Italy in 2019.
 
 |
 
@@ -37,7 +39,7 @@ or
 Features and usage
 ------------------
 
-* To **learn how to use the package** and its main features, visit https://gabzech.github.io/wordcloud_mapper.
+* To **learn how to use the package** and its main features, visit https://GabZech.github.io/wordcloud_mapper.
 * To **see the documentation** and understand the specific arguments passed to each function, visit: https://wordcloud-mapper.readthedocs.io.
 
 

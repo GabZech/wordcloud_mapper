@@ -38,8 +38,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-wordcloud_mapper could always use more documentation, whether as part of the
-official wordcloud_mapper docs, in docstrings, or even on the web in blog posts,
+WordCloud_Mapper could always use more documentation, whether as part of the
+official WordCloud_Mapper docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
@@ -57,9 +57,9 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `wordcloud_mapper` for local development.
+Ready to contribute? Here's how to set up `WordCloud_Mapper` for local development.
 
-1. Fork the `wordcloud_mapper` repo on GitHub.
+1. Fork the `WordCloud_Mapper` repo on GitHub.
 2. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/wordcloud_mapper.git

@@ -48,8 +48,7 @@ setup(
     tests_require=test_requirements,
     url='https://github.com/GabZech/wordcloud_mapper',
     project_urls={
-        'Instructions and usage': 'https://gabzech.github.io/wordcloud_mapper',
-        'Documentation': 'https://wordcloud-mapper.readthedocs.io/'
+        'Documentation': 'https://gabzech.github.io/wordcloud_mapper',
     },
     version='0.1.0',
     zip_safe=False,

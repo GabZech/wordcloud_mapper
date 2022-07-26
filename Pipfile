@@ -23,6 +23,8 @@ pytest = "*"
 esbonio = "*"
 ipykernel = "*"
 autopep8 = "*"
+numpydoc = "*"
+sphinx-rtd-theme = "*"
 
 [requires]
 python_version = "3.10"

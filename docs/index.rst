@@ -1,20 +1,12 @@
-Welcome to wordcloud_mapper's documentation!
-======================================
-
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :maxdepth: 1
+   :caption: Documentation
 
-   readme
-   installation
-   usage
+   About <readme>
    modules
    contributing
    authors
    history
 
-Indices and tables
-==================
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. include:: ../README.rst

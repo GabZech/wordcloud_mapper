@@ -1,5 +1,5 @@
 ================
-wordcloud_mapper
+WordCloud_Mapper
 ================
 
 
@@ -13,7 +13,7 @@ wordcloud_mapper
         :target: https://wordcloud-mapper.readthedocs.io/en/latest/?version=latest
         :alt: Documentation Status
 
-`wordcloud_mapper` is a Python package that allows one to **create wordclouds shaped like regions on a map**. 
+`WordCloud_Mapper` is a Python package that allows one to **create wordclouds shaped like regions on a map**. 
 
 Such visualisations are especially useful when communicating sets of data that consist of many different observations and each observation is attributed to a specific region and size of occurrence. Take the example below, a dataset containing the name of the biggest companies (in terms of estimated number of employees) for each region in Germany and Italy in 2019.
 
@@ -24,7 +24,7 @@ Such visualisations are especially useful when communicating sets of data that c
 Installation
 ------------
 
-To install `wordcloud_mapper`, run in your terminal:
+To install `WordCloud_Mapper`, run in your terminal:
 
 .. code-block:: console
 
@@ -36,11 +36,15 @@ or
 
     pip install wordcloud-mapper
 
+
 Features and usage
 ------------------
 
-* To **learn how to use the package** and its main features, visit https://GabZech.github.io/wordcloud_mapper.
-* To **see the documentation** and understand the specific arguments passed to each function, visit: https://wordcloud-mapper.readthedocs.io.
+* **Create a wordcloud map** from data stored in a DataFrame object using wordcloud_map().
+* **Easily resize a map** by any desired scaling factor using resize_map().
+* **Load dummy datasets** to test out the package's features using load_companies().
+
+See the `documentation <https://GabZech.github.io/wordcloud_mapper>`_ for more information on how to use the package and its functions.
 
 
 Notes on geographical nomenclature
@@ -52,11 +56,9 @@ However, this means that **this package currently only works for creating wordcl
 
 In a future release, support nor non-NUTS regional referencing systems will be implemented.
 
-Acknowledgements
-----------------
+Feedback and contributions
+--------------------------
 
-* Special thanks to Leonard Mandtler for providing a first prototype of a wordcloud mapping function and to Julian Kath and Lorenzo Gini for co-developing a functioning version of `wordcloud_mapper in R <https://gabzech.github.io/wordcloud.mappeR>`_, which served as the basis for developing the first version of this package.
-* This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+This package is under active development, so any feedback, recommendations, suggestions or contribution requests are more than welcome! 
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+Please read the contribution instructions or email g.dev@posteo.net if you would like to provide any feedback.

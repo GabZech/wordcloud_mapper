@@ -437,7 +437,7 @@ def wordcloud_map(df,
     Parameters
     ----------
     df : DataFrame
-        DataFrame containing columns with NUTS codes, words and word counts.
+        DataFrame object containing columns with NUTS codes, words and word counts.
     nuts_codes : str
         Name of the column in the DataFrame containing the NUTS codes.
     words : str

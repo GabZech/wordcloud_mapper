@@ -12,8 +12,8 @@ def load_companies(country="DEU"):
     Parameters
     ----------
     country : str, optional (default = "DEU")
-        If ```country = DEU```, loads German dataset. If ```country = ITA```,
-        loads Italian dataset.
+        If ``country = "DEU"``, loads the German dataset. 
+        If ``country = "ITA"``, loads the Italian dataset.
 
     Returns
     -------

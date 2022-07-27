@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>wordcloud_mapper.wordcloud_map &mdash; WordCloud_Mapper 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> WordCloud_Mapper
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Features and usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">WordCloud_Mapper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>wordcloud_mapper.wordcloud_map</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for wordcloud_mapper.wordcloud_map</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">shapefile</span> <span class="kn">import</span> <span class="n">Reader</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">unique</span><span class="p">,</span> <span class="n">frombuffer</span><span class="p">,</span> <span class="n">reshape</span><span class="p">,</span> <span class="n">fromiter</span><span class="p">,</span> <span class="n">uint8</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">descartes</span> <span class="kn">import</span> <span class="n">PolygonPatch</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span> <span class="nn">wordcloud</span> <span class="kn">import</span> <span class="n">WordCloud</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+
+<span class="k">def</span> <span class="nf">download_shapefiles</span><span class="p">(</span><span class="n">map_scale</span><span class="o">=</span><span class="s2">&quot;10M&quot;</span><span class="p">,</span>
+                        <span class="n">year</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span>
+                        <span class="n">coord_system</span><span class="o">=</span><span class="mi">4326</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download shapefiles for NUTS regions from Eurostat&#39;s GISCO database.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    map_scale : str (default = &quot;10M&quot;)</span>
+<span class="sd">        Scale used for the regions&#39; polygon shapes (i.e. regional boundaries).</span>
+<span class="sd">        Smaller scales (e.g. &quot;03M&quot;) mean more detailed polygon shapes and thus</span>
+<span class="sd">        longer running times. Larger scales (e.g. &quot;60M&quot;) mean less detailed</span>
+<span class="sd">        polygon shapes and thus shorter running times. Available values:</span>
+<span class="sd">        ``&quot;60M&quot;``, ``&quot;20M&quot;``, ``&quot;10M&quot;``, ``&quot;03M&quot;`` or ``&quot;01M&quot;``. For a visual</span>
+<span class="sd">        explanation, see</span>
+<span class="sd">        https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png</span>
+<span class="sd">    year : int (default = 2021)</span>
+<span class="sd">        The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.</span>
+<span class="sd">    coord_system : int (default = 4326)</span>
+<span class="sd">        4-digit EPSG code (a unique identifier for different coordinate</span>
+<span class="sd">        systems). Available values: ``4326`` (WGS84, coordinates in decimal</span>
+<span class="sd">        degrees), ``3035`` (ETRS 1989 in Lambert Azimutal projection with</span>
+<span class="sd">        centre in E52N10, coordinates in meters), ``3857`` (WGS84 Web Mercator</span>
+<span class="sd">        Auxiliary Sphere, coordinates in meters).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    shapefile.Reader</span>
+<span class="sd">        Reader object of shapefile module containing shapefiles of NUTS</span>
+<span class="sd">        regions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/</span><span class="se">\</span>
+<span class="s2">NUTS_RG_</span><span class="si">{</span><span class="n">map_scale</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">coord_system</span><span class="si">}</span><span class="s2">.shp.zip&quot;</span>
+    <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">shapefiles</span>
+
+
+<span class="k">def</span> <span class="nf">get_unique_codes</span><span class="p">(</span><span class="n">df</span><span class="p">,</span>
+                     <span class="n">nuts_codes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve all unique NUTS codes in the provided dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : DataFrame</span>
+<span class="sd">        DataFrame containing a column with NUTS codes.</span>
+<span class="sd">    nuts_codes : str</span>
+<span class="sd">        Name of the column in the DataFrame containing the NUTS codes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    unique_codes : ndarray</span>
+<span class="sd">        Array containing unique NUTS codes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unique_codes</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">nuts_codes</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">unique_codes</span>
+
+
+<span class="k">def</span> <span class="nf">get_bbox_map</span><span class="p">(</span><span class="n">shapefiles</span><span class="p">,</span>
+                 <span class="n">unique_codes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retreive the minimum and maximum X and Y bounding box values from all</span>
+<span class="sd">    shapefiles to use as boundaries for the final wordcloud map.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shapefiles : shapefile.Reader</span>
+<span class="sd">        Reader object of shapefile module containing shapefiles of NUTS</span>
+<span class="sd">        regions.</span>
+<span class="sd">    unique_codes : ndarray</span>
+<span class="sd">        Array containing unique NUTS codes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Xmin : float</span>
+<span class="sd">        Minimum X value of bounding box.</span>
+<span class="sd">    Ymin : float</span>
+<span class="sd">        Minimum Y value of bounding box.</span>
+<span class="sd">    Xmax : float</span>
+<span class="sd">        Maximum X value of bounding box.</span>
+<span class="sd">    Ymax : float</span>
+<span class="sd">        Maximum Y value of bounding box.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># create lists with all bbox values</span>
+    <span class="n">Xmins</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Ymins</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Xmaxs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Ymaxs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">shaperecord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shapefiles</span><span class="o">.</span><span class="n">shapeRecords</span><span class="p">()):</span>
+        <span class="n">nuts_id</span> <span class="o">=</span> <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span>
+        <span class="k">if</span> <span class="n">nuts_id</span> <span class="ow">in</span> <span class="n">unique_codes</span><span class="p">:</span>
+            <span class="n">minX</span><span class="p">,</span> <span class="n">minY</span><span class="p">,</span> <span class="n">maxX</span><span class="p">,</span> <span class="n">maxY</span> <span class="o">=</span> <span class="n">shaperecord</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">bbox</span>
+            <span class="n">Xmins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">minX</span><span class="p">)</span>
+            <span class="n">Ymins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">minY</span><span class="p">)</span>
+            <span class="n">Xmaxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">maxX</span><span class="p">)</span>
+            <span class="n">Ymaxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">maxY</span><span class="p">)</span>
+
+    <span class="c1"># select only min and max values from lists</span>
+    <span class="n">Xmin</span><span class="p">,</span> <span class="n">Ymin</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Xmins</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">Ymins</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">Xmaxs</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">Ymaxs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Xmin</span><span class="p">,</span> <span class="n">Ymin</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span>
+
+
+<span class="k">def</span> <span class="nf">get_bbox_region</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retreive the minimum and maximum X and Y bounding box values for a given</span>
+<span class="sd">    region.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shaperecord : shapefile.ShapeRecord</span>
+<span class="sd">        ShapeRecord object of shapefile module containing information about a</span>
+<span class="sd">        single NUTS region.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    minX : float</span>
+<span class="sd">        Minimum X value of bounding box.</span>
+<span class="sd">    maxX : float</span>
+<span class="sd">        Maximum X value of bounding box.</span>
+<span class="sd">    minY : float</span>
+<span class="sd">        Minimum Y value of bounding box.</span>
+<span class="sd">    maxY : float</span>
+<span class="sd">        Maximum X value of bounding box.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">minX</span><span class="p">,</span> <span class="n">minY</span><span class="p">,</span> <span class="n">maxX</span><span class="p">,</span> <span class="n">maxY</span> <span class="o">=</span> <span class="n">shaperecord</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">bbox</span>
+
+    <span class="k">return</span> <span class="n">minX</span><span class="p">,</span> <span class="n">maxX</span><span class="p">,</span> <span class="n">minY</span><span class="p">,</span> <span class="n">maxY</span>
+
+
+<span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span>
+             <span class="n">fill_colour</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+             <span class="n">contour_colour</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+             <span class="n">resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create images to be used as mask (i.e. the shape) of the wordcloud and to</span>
+<span class="sd">    add border lines to the final wordcloud map.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shaperecord : shapefile.ShapeRecord</span>
+<span class="sd">        ShapeRecord object of shapefile module containing information about a</span>
+<span class="sd">        single NUTS region.</span>
+<span class="sd">    fill_colour : str (default = &quot;black&quot;)</span>
+<span class="sd">        Fill colour used when creating mask of region. Value None is passed</span>
+<span class="sd">        when adding borders of regions to final wordcloud map.</span>
+<span class="sd">    contour_colour : str (default = &quot;black&quot;)</span>
+<span class="sd">        Contour colour to use when showing regional borders in final wordcloud</span>
+<span class="sd">        map.</span>
+<span class="sd">    resolution : str (default = 100)</span>
+<span class="sd">        DPI (dots per inch) value used to generate mask image. Higher values</span>
+<span class="sd">        create sharper regional border lines but take longer to run.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    img_arr : ndarray</span>
+<span class="sd">        Array representing the image.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># create empty plot</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+    <span class="c1"># plot region</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="n">shaperecord</span><span class="o">.</span><span class="n">__geo_interface__</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">fill_colour</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># used to plot region borders</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">PolygonPatch</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">ec</span><span class="o">=</span><span class="n">contour_colour</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">PolygonPatch</span><span class="p">(</span>
+            <span class="n">geometry</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="n">fill_colour</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># save image in memory buffer and reshape</span>
+    <span class="n">io_buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">io_buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span> <span class="o">*</span> <span class="n">resolution</span>
+    <span class="n">io_buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">img_arr</span> <span class="o">=</span> <span class="n">frombuffer</span><span class="p">(</span><span class="n">io_buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">img_arr</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">img_arr</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># close image and plot</span>
+    <span class="n">io_buf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">img_arr</span>
+
+
+<span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span>
+             <span class="n">nuts_codes</span><span class="p">,</span>
+             <span class="n">words</span><span class="p">,</span>
+             <span class="n">word_counts</span><span class="p">,</span>
+             <span class="n">nuts_code</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For a given NUTS code, retreive its words and their count/frequency from</span>
+<span class="sd">    the DataFrame containing all data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : DataFrame</span>
+<span class="sd">        DataFrame containing columns with NUTS codes, words and word counts.</span>
+<span class="sd">    nuts_codes : str</span>
+<span class="sd">        Name of the column in the DataFrame containing the NUTS codes.</span>
+<span class="sd">    words : str</span>
+<span class="sd">        Name of the column in the DataFrame containing the words.</span>
+<span class="sd">    word_counts : str</span>
+<span class="sd">        Name of the column in the DataFrame containing the word counts.</span>
+<span class="sd">    nuts_code : str</span>
+<span class="sd">        The NUTS code to filter on.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing the words as keys and their count as values for</span>
+<span class="sd">        the given NUTS region.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">nuts_codes</span><span class="p">]</span> <span class="o">==</span> <span class="n">nuts_code</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df_temp</span><span class="p">[</span><span class="n">words</span><span class="p">],</span> <span class="n">df_temp</span><span class="p">[</span><span class="n">word_counts</span><span class="p">]))</span>
+
+
+<span class="k">def</span> <span class="nf">plot_region</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">ax</span><span class="p">,</span>
+                <span class="n">bbox</span><span class="p">,</span>
+                <span class="n">colour_func</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                <span class="n">rendering_quality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">min_font_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                <span class="n">max_font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">max_words</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                <span class="n">relative_scaling</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                <span class="n">prefer_horizontal</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the wordcloud for a single region.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mask : ndarray</span>
+<span class="sd">        The image array to use as mask (i.e. shape) of the wordcloud.</span>
+<span class="sd">    data : dict</span>
+<span class="sd">        Dictionary containing the words as keys and their count as values for</span>
+<span class="sd">        the given NUTS region.</span>
+<span class="sd">    ax : matplotlib.Axes class</span>
+<span class="sd">        An instance of the matplotlib Axes class to which the wordcloud is</span>
+<span class="sd">        plotted to.</span>
+<span class="sd">    bbox : tuple</span>
+<span class="sd">        Tuple containing (minX, maxX, minY, maxY) bounding box values of the</span>
+<span class="sd">        region.</span>
+<span class="sd">    colour_func : str (default = &quot;random&quot;)</span>
+<span class="sd">        String indicating which colour function to use. Available values:</span>
+<span class="sd">        ``&quot;random&quot;`` sets a random luminosity to each word within a region,</span>
+<span class="sd">        ``&quot;frequency&quot;`` sets the luminosity of each word according to their</span>
+<span class="sd">        frequency/word count, where the most frequent word receives the max</span>
+<span class="sd">        luminosity of 50.</span>
+<span class="sd">    rendering_quality : int (default = 1)</span>
+<span class="sd">        The rendering quality of the words in the wordcloud. Higher values</span>
+<span class="sd">        produce better-looking / sharper words but take longer to run.</span>
+<span class="sd">    min_font_size : int (default = 4)</span>
+<span class="sd">        Smallest font size to use. Word placement will stop when there is no</span>
+<span class="sd">        more room to fit words of this size.</span>
+<span class="sd">    max_font_size : int or None (default = None)</span>
+<span class="sd">        Maximum font size for the largest word. If None, a relative sizing</span>
+<span class="sd">        based on the height of the image is used.</span>
+<span class="sd">    max_words : int (default = 200)</span>
+<span class="sd">        Maximum number of words to be included in wordcloud for each region.</span>
+<span class="sd">    relative_scaling : float (default = &#39;auto&#39;)</span>
+<span class="sd">        Importance of relative word frequencies for font-size. With</span>
+<span class="sd">        ``relative_scaling = 0``, only the ranking of words is considered. With</span>
+<span class="sd">        ``relative_scaling = 1``, a word that is twice as frequent will have</span>
+<span class="sd">        twice the size. In datasets with highly uneven word frequencies,</span>
+<span class="sd">        relative_scaling = 1 might lead to very few words being fitted, so a</span>
+<span class="sd">        value of around 0.5 often looks better. If ``relative_scaling =</span>
+<span class="sd">        &#39;auto&#39;`` it will be set to 0.5 unless ``repeat = True``, in which case</span>
+<span class="sd">        it will be set to 0.</span>
+<span class="sd">    prefer_horizontal : float (default = 0.9)</span>
+<span class="sd">        The ratio of times to try horizontal fitting as opposed to vertical. If</span>
+<span class="sd">        ``prefer_horizontal = 1``, no words will be placed vertically. If</span>
+<span class="sd">        ``prefer_horizontal &lt; 1``, the algorithm will try rotating the word if</span>
+<span class="sd">        it doesn’t fit.</span>
+<span class="sd">    repeat : bool (default = False)</span>
+<span class="sd">        Whether to repeat already-placed words until ``max_words`` or</span>
+<span class="sd">        ``min_font_size`` is reached.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># set a random hue colour</span>
+    <span class="n">hue</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">colour_func_random</span><span class="p">(</span><span class="n">word</span><span class="p">,</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a random luminosity to each word within a region.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        word : str</span>
+<span class="sd">            The word being plotted.</span>
+
+<span class="sd">        Other Parameters</span>
+<span class="sd">        ----------------</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Keyword arguments passed to the colour function of the wordcloud.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            String containing HSL colour values.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sat</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">lum</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>  <span class="c1"># prevents being too bright or too dark</span>
+
+        <span class="k">return</span> <span class="s2">&quot;hsl(</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">%, </span><span class="si">{}</span><span class="s2">%)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hue</span><span class="p">,</span> <span class="n">sat</span><span class="p">,</span> <span class="n">lum</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">colour_func_frequency</span><span class="p">(</span><span class="n">word</span><span class="p">,</span>
+                              <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the luminosity of each word according to their frequency/word</span>
+<span class="sd">        count, where the most frequent word receives the max luminosity of 50.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        word : str</span>
+<span class="sd">            The word being plotted.</span>
+
+<span class="sd">        Other Parameters</span>
+<span class="sd">        ----------------</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Keyword arguments passed to the colour function of the wordcloud.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            String containing HSL colour values.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># normalise frequencies</span>
+        <span class="n">data_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">fromiter</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                     <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> \
+            <span class="o">/</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">word_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+
+        <span class="n">sat</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">lum</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">data_norm</span><span class="p">[</span><span class="n">word_index</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="s2">&quot;hsl(</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">%, </span><span class="si">{}</span><span class="s2">%)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hue</span><span class="p">,</span> <span class="n">sat</span><span class="p">,</span> <span class="n">lum</span><span class="p">)</span>
+
+    <span class="c1"># set colour function according to user input</span>
+    <span class="k">if</span> <span class="n">colour_func</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">colour_func_random</span>
+    <span class="k">elif</span> <span class="n">colour_func</span> <span class="o">==</span> <span class="s2">&quot;frequency&quot;</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">colour_func_frequency</span>
+
+    <span class="c1"># create wordcloud</span>
+    <span class="n">wc</span> <span class="o">=</span> <span class="n">WordCloud</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+                   <span class="n">background_color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGBA&quot;</span><span class="p">,</span>
+                   <span class="n">scale</span><span class="o">=</span><span class="n">rendering_quality</span><span class="p">,</span>
+                   <span class="n">color_func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span>
+                   <span class="n">min_font_size</span><span class="o">=</span><span class="n">min_font_size</span><span class="p">,</span>
+                   <span class="n">max_font_size</span><span class="o">=</span><span class="n">max_font_size</span><span class="p">,</span>
+                   <span class="n">max_words</span><span class="o">=</span><span class="n">max_words</span><span class="p">,</span>
+                   <span class="n">relative_scaling</span><span class="o">=</span><span class="n">relative_scaling</span><span class="p">,</span>
+                   <span class="n">prefer_horizontal</span><span class="o">=</span><span class="n">prefer_horizontal</span><span class="p">,</span>
+                   <span class="n">repeat</span><span class="o">=</span><span class="n">repeat</span>
+                   <span class="p">)</span>
+
+    <span class="n">wc</span><span class="o">.</span><span class="n">generate_from_frequencies</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">img_array</span> <span class="o">=</span> <span class="n">wc</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_array</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span>
+              <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;antialiased&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_contour</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the borders of the regions on the map.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shaperecord : shapefile.ShapeRecord</span>
+<span class="sd">        ShapeRecord object of shapefile module containing information about a</span>
+<span class="sd">        single NUTS region.</span>
+<span class="sd">    ax : matplotlib.Axes class</span>
+<span class="sd">        An instance of the matplotlib Axes class to which the wordcloud is</span>
+<span class="sd">        plotted to.</span>
+<span class="sd">    bbox : tuple</span>
+<span class="sd">        Tuple containing (minX, maxX, minY, maxY) bounding box values of the</span>
+<span class="sd">        region.</span>
+<span class="sd">    resolution : str (default = 100)</span>
+<span class="sd">        DPI (dots per inch) value used to generate mask image. Higher values</span>
+<span class="sd">        create sharper regional border lines but take longer to run.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">contour</span> <span class="o">=</span> <span class="n">get_mask</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">fill_colour</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">contour_colour</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">contour</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span>
+              <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;antialiased&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="wordcloud_map"><a class="viewcode-back" href="../../functions.html#wordcloud_mapper.wordcloud_map">[docs]</a><span class="k">def</span> <span class="nf">wordcloud_map</span><span class="p">(</span><span class="n">df</span><span class="p">,</span>
+                  <span class="n">nuts_codes</span><span class="p">,</span>
+                  <span class="n">words</span><span class="p">,</span>
+                  <span class="n">word_counts</span><span class="p">,</span>
+                  <span class="n">colour_func</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                  <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">rendering_quality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">min_font_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                  <span class="n">max_font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">max_words</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                  <span class="n">relative_scaling</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                  <span class="n">prefer_horizontal</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                  <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a wordcloud map using data from a DataFrame.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : DataFrame</span>
+<span class="sd">        DataFrame object containing columns with NUTS codes, words and word counts.</span>
+<span class="sd">    nuts_codes : str</span>
+<span class="sd">        Name of the column in the DataFrame containing the NUTS codes.</span>
+<span class="sd">    words : str</span>
+<span class="sd">        Name of the column in the DataFrame containing the words.</span>
+<span class="sd">    word_counts : str</span>
+<span class="sd">        Name of the column in the DataFrame containing the word counts.</span>
+<span class="sd">    colour_func : str (default = &quot;random&quot;)</span>
+<span class="sd">        String indicating which colour function to use. Available values:</span>
+<span class="sd">        ``&quot;random&quot;`` sets a random luminosity to each word within a region,</span>
+<span class="sd">        ``&quot;frequency&quot;`` sets the luminosity of each word according to their</span>
+<span class="sd">        frequency/word count, where the most frequent word receives the max</span>
+<span class="sd">        luminosity of 50.</span>
+<span class="sd">    scale : float (default = 1)</span>
+<span class="sd">        The scale of the produced figure. The given value works as a multiplier</span>
+<span class="sd">        of matplotlib&#39;s default figure size. If ``scale = 1.0``, retains</span>
+<span class="sd">        default figure size. If ``scale &gt; 1.0``, figure gets bigger by a factor</span>
+<span class="sd">        of scale (e.g. 1.5 means 50% bigger). If ``scale &lt; 1.0``, figure gets</span>
+<span class="sd">        smaller by a factor of scale (e.g. 0.5 means 50% smaller).</span>
+<span class="sd">    rendering_quality : int (default = 1)</span>
+<span class="sd">        The rendering quality of the words in the wordcloud. Higher values</span>
+<span class="sd">        produce better-looking / sharper words but take longer to run.</span>
+<span class="sd">    min_font_size : int (default = 4)</span>
+<span class="sd">        Smallest font size to use. Word placement will stop when there is no</span>
+<span class="sd">        more room to fit words of this size.</span>
+<span class="sd">    max_font_size : int or None (default = None)</span>
+<span class="sd">        Maximum font size for the largest word. If None, a relative sizing</span>
+<span class="sd">        based on the height of the image is used.</span>
+<span class="sd">    max_words : int (default = 200)</span>
+<span class="sd">        Maximum number of words to be included in wordcloud for each region.</span>
+<span class="sd">    relative_scaling : float (default = &#39;auto&#39;)</span>
+<span class="sd">        Importance of relative word frequencies for font-size. With</span>
+<span class="sd">        ``relative_scaling = 0``, only the ranking of words is considered. With</span>
+<span class="sd">        ``relative_scaling = 1``, a word that is twice as frequent will have</span>
+<span class="sd">        twice the size. In datasets with highly uneven word frequencies,</span>
+<span class="sd">        relative_scaling = 1 might lead to very few words being fitted, so a</span>
+<span class="sd">        value of around 0.5 often looks better. If ``relative_scaling =</span>
+<span class="sd">        &#39;auto&#39;`` it will be set to 0.5 unless ``repeat = True``, in which case</span>
+<span class="sd">        it will be set to 0.</span>
+<span class="sd">    prefer_horizontal : float (default = 0.9)</span>
+<span class="sd">        The ratio of times to try horizontal fitting as opposed to vertical. If</span>
+<span class="sd">        ``prefer_horizontal = 1``, no words will be placed vertically. If</span>
+<span class="sd">        ``prefer_horizontal &lt; 1``, the algorithm will try rotating the word if</span>
+<span class="sd">        it doesn&#39;t fit.</span>
+<span class="sd">    repeat : bool (default = False)</span>
+<span class="sd">        Whether to repeat already-placed words until ``max_words`` or</span>
+<span class="sd">        ``min_font_size`` is reached.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matplotlib.figure.Figure</span>
+<span class="sd">        The wordcloud map as a matplotlib Figure object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">download_shapefiles</span><span class="p">()</span>
+    <span class="n">unique_codes</span> <span class="o">=</span> <span class="n">get_unique_codes</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">nuts_codes</span><span class="p">)</span>
+    <span class="n">Xmin</span><span class="p">,</span> <span class="n">Ymin</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span> <span class="o">=</span> <span class="n">get_bbox_map</span><span class="p">(</span><span class="n">shapefiles</span><span class="p">,</span> <span class="n">unique_codes</span><span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">Xmin</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">Ymin</span><span class="p">,</span> <span class="n">Ymax</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">shaperecord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shapefiles</span><span class="o">.</span><span class="n">shapeRecords</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span> <span class="ow">in</span> <span class="n">unique_codes</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">get_mask</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">nuts_codes</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">word_counts</span><span class="p">,</span>
+                            <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span><span class="p">)</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="n">get_bbox_region</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">)</span>
+            <span class="n">plot_contour</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="n">plot_region</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
+                        <span class="n">colour_func</span><span class="o">=</span><span class="n">colour_func</span><span class="p">,</span>
+                        <span class="n">rendering_quality</span><span class="o">=</span><span class="n">rendering_quality</span><span class="p">,</span>
+                        <span class="n">min_font_size</span><span class="o">=</span><span class="n">min_font_size</span><span class="p">,</span>
+                        <span class="n">max_font_size</span><span class="o">=</span><span class="n">max_font_size</span><span class="p">,</span>
+                        <span class="n">max_words</span><span class="o">=</span><span class="n">max_words</span><span class="p">,</span>
+                        <span class="n">relative_scaling</span><span class="o">=</span><span class="n">relative_scaling</span><span class="p">,</span>
+                        <span class="n">prefer_horizontal</span><span class="o">=</span><span class="n">prefer_horizontal</span><span class="p">,</span>
+                        <span class="n">repeat</span><span class="o">=</span><span class="n">repeat</span>
+                        <span class="p">)</span>
+
+    <span class="c1"># get current size and multiply that by the given scale</span>
+    <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span><span class="o">*</span><span class="n">scale</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+    <span class="n">dpi</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Figure successfully produced with width </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="o">*</span><span class="n">dpi</span><span class="p">)</span><span class="si">}</span><span class="s2">px </span><span class="se">\</span>
+<span class="s2">and height </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="o">*</span><span class="n">dpi</span><span class="p">)</span><span class="si">}</span><span class="s2">px.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Gabriel da Silva Zech.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

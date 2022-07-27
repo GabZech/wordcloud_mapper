@@ -6,7 +6,7 @@
    About <readme>
    modules
    contributing
-   authors
+   credits
    history
 
 .. include:: ../README.rst

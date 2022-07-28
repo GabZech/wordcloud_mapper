@@ -4,14 +4,18 @@ WordCloud_Mapper
 
 
 .. image:: https://img.shields.io/pypi/v/wordcloud_mapper.svg
+        :alt: PyPI - Version
         :target: https://pypi.python.org/pypi/wordcloud_mapper
 
-.. image:: https://img.shields.io/travis/GabZech/wordcloud_mapper.svg
-        :target: https://travis-ci.com/GabZech/wordcloud_mapper
+.. image:: https://img.shields.io/github/pipenv/locked/python-version/GabZech/wordcloud_mapper   
+        :alt: GitHub Pipenv locked Python version
 
-.. image:: https://readthedocs.org/projects/wordcloud-mapper/badge/?version=latest
-        :target: https://wordcloud-mapper.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
+.. image:: https://img.shields.io/pypi/l/wordcloud_mapper 
+        :alt: PyPI - License
+        :target: https://github.com/GabZech/wordcloud_mapper/blob/main/LICENSE
+
+.. image:: https://img.shields.io/github/repo-size/GabZech/wordcloud_mapper?color=white   
+        :alt: GitHub repo size
 
 `WordCloud_Mapper` is a Python package that allows one to **create wordclouds shaped like regions on a map**. 
 

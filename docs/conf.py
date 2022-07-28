@@ -98,9 +98,9 @@ html_theme = 'sphinx_rtd_theme'
 
 html_context = {
     "display_github": True, # Integrate GitHub
-    "github_user": "GaZech", # Username
+    "github_user": "GabZech", # Username
     "github_repo": "wordcloud_mapper", # Repo name
-    "github_version": "master", # Version
+    "github_version": "main", # Version
     "conf_py_path": "/" # Path in the checkout to the docs root
 }
 

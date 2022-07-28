@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
 SPHINXPROJ    = wordcloud_mapper
 SOURCEDIR     = .
-BUILDDIR      = .
+BUILDDIR      = ../gh-pages
 
 # Put it first so that "make" without argument is like "make help".
 help:

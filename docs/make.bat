@@ -8,7 +8,7 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=python -msphinx
 )
 set SOURCEDIR=.
-set BUILDDIR=.
+set BUILDDIR=../gh-pages
 set SPHINXPROJ=wordcloud_mapper
 
 if "%1" == "" goto help

@@ -7,15 +7,15 @@ from wordcloud import WordCloud
 from random import randint
 
 
-def download_shapefiles(map_scale="10M",
-                        year=2021,
+def download_shapefiles(shapes_scale="10M",
+                        nuts_year=2021,
                         coord_system=4326):
     """
     Download shapefiles for NUTS regions from Eurostat's GISCO database.
 
     Parameters
     ----------
-    map_scale : str (default = "10M")
+    shapes_scale : str (default = "10M")
         Scale used for the regions' polygon shapes (i.e. regional boundaries).
         Smaller scales (e.g. "03M") mean more detailed polygon shapes and thus
         longer running times. Larger scales (e.g. "60M") mean less detailed
@@ -23,7 +23,7 @@ def download_shapefiles(map_scale="10M",
         ``"60M"``, ``"20M"``, ``"10M"``, ``"03M"`` or ``"01M"``. For a visual
         explanation, see
         https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png
-    year : int (default = 2021)
+    nuts_year : int (default = 2021)
         The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.
     coord_system : int (default = 4326)
         4-digit EPSG code (a unique identifier for different coordinate
@@ -40,7 +40,7 @@ def download_shapefiles(map_scale="10M",
 
     """
     url = f"https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/\
-NUTS_RG_{map_scale}_{year}_{coord_system}.shp.zip"
+NUTS_RG_{shapes_scale}_{nuts_year}_{coord_system}.shp.zip"
     shapefiles = Reader(url)
 
     return shapefiles
@@ -430,7 +430,11 @@ def wordcloud_map(df,
                   max_words=200,
                   relative_scaling=0.5,
                   prefer_horizontal=0.9,
-                  repeat=False):
+                  repeat=False,
+                  border_detail="10M",
+                  nuts_year=2021,
+                  coord_system=4326
+                  ):
     """
     Create a wordcloud map using data from a DataFrame.
 
@@ -484,6 +488,24 @@ def wordcloud_map(df,
     repeat : bool (default = False)
         Whether to repeat already-placed words until ``max_words`` or
         ``min_font_size`` is reached.
+    border_detail : str (default = "10M")
+        How detailed the regions' borders (i.e. the polygon shapefiles) should 
+        be, based on the official NUTS values used to download shapefiles.
+        Smaller scales (e.g. "03M") mean more detailed polygon shapes and thus
+        longer running times. Larger scales (e.g. "60M") mean less detailed
+        polygon shapes and thus shorter running times. Available values:
+        ``"60M"``, ``"20M"``, ``"10M"``, ``"03M"`` or ``"01M"``. For a visual
+        explanation, see
+        https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png
+    nuts_year : int (default = 2021)
+        The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.
+    coord_system : int (default = 4326)
+        4-digit EPSG code (a unique identifier for different coordinate
+        systems). Available values: ``4326`` (WGS84, coordinates in decimal
+        degrees), ``3035`` (ETRS 1989 in Lambert Azimutal projection with
+        centre in E52N10, coordinates in meters), ``3857`` (WGS84 Web Mercator
+        Auxiliary Sphere, coordinates in meters).
+
 
     Returns
     -------
@@ -491,7 +513,7 @@ def wordcloud_map(df,
         The wordcloud map as a matplotlib Figure object.
 
     """
-    shapefiles = download_shapefiles()
+    shapefiles = download_shapefiles(border_detail, nuts_year, coord_system)
     unique_codes = get_unique_codes(df, nuts_codes)
     Xmin, Ymin, Xmax, Ymax = get_bbox_map(shapefiles, unique_codes)
 

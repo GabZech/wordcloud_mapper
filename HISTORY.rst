@@ -6,3 +6,9 @@ History
 ------------------
 
 * First release on PyPI.
+
+
+0.1.1 (2022)
+------------------
+
+* Allow users to change the parameters when downloading NUTS shapefiles from Eurostat's API in wordcloud_map().

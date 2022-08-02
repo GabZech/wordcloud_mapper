@@ -82,15 +82,15 @@
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 
-<span class="k">def</span> <span class="nf">download_shapefiles</span><span class="p">(</span><span class="n">map_scale</span><span class="o">=</span><span class="s2">&quot;10M&quot;</span><span class="p">,</span>
-                        <span class="n">year</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">download_shapefiles</span><span class="p">(</span><span class="n">shapes_scale</span><span class="o">=</span><span class="s2">&quot;10M&quot;</span><span class="p">,</span>
+                        <span class="n">nuts_year</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span>
                         <span class="n">coord_system</span><span class="o">=</span><span class="mi">4326</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download shapefiles for NUTS regions from Eurostat&#39;s GISCO database.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    map_scale : str (default = &quot;10M&quot;)</span>
+<span class="sd">    shapes_scale : str (default = &quot;10M&quot;)</span>
 <span class="sd">        Scale used for the regions&#39; polygon shapes (i.e. regional boundaries).</span>
 <span class="sd">        Smaller scales (e.g. &quot;03M&quot;) mean more detailed polygon shapes and thus</span>
 <span class="sd">        longer running times. Larger scales (e.g. &quot;60M&quot;) mean less detailed</span>
@@ -98,7 +98,7 @@
 <span class="sd">        ``&quot;60M&quot;``, ``&quot;20M&quot;``, ``&quot;10M&quot;``, ``&quot;03M&quot;`` or ``&quot;01M&quot;``. For a visual</span>
 <span class="sd">        explanation, see</span>
 <span class="sd">        https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png</span>
-<span class="sd">    year : int (default = 2021)</span>
+<span class="sd">    nuts_year : int (default = 2021)</span>
 <span class="sd">        The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.</span>
 <span class="sd">    coord_system : int (default = 4326)</span>
 <span class="sd">        4-digit EPSG code (a unique identifier for different coordinate</span>
@@ -115,7 +115,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/</span><span class="se">\</span>
-<span class="s2">NUTS_RG_</span><span class="si">{</span><span class="n">map_scale</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">coord_system</span><span class="si">}</span><span class="s2">.shp.zip&quot;</span>
+<span class="s2">NUTS_RG_</span><span class="si">{</span><span class="n">shapes_scale</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">nuts_year</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">coord_system</span><span class="si">}</span><span class="s2">.shp.zip&quot;</span>
     <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">shapefiles</span>
@@ -505,7 +505,11 @@
                   <span class="n">max_words</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
                   <span class="n">relative_scaling</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                   <span class="n">prefer_horizontal</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-                  <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                  <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">border_detail</span><span class="o">=</span><span class="s2">&quot;10M&quot;</span><span class="p">,</span>
+                  <span class="n">nuts_year</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span>
+                  <span class="n">coord_system</span><span class="o">=</span><span class="mi">4326</span>
+                  <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a wordcloud map using data from a DataFrame.</span>
 
@@ -559,6 +563,24 @@
 <span class="sd">    repeat : bool (default = False)</span>
 <span class="sd">        Whether to repeat already-placed words until ``max_words`` or</span>
 <span class="sd">        ``min_font_size`` is reached.</span>
+<span class="sd">    border_detail : str (default = &quot;10M&quot;)</span>
+<span class="sd">        How detailed the regions&#39; borders (i.e. the polygon shapefiles) should </span>
+<span class="sd">        be, based on the official NUTS values used to download shapefiles.</span>
+<span class="sd">        Smaller scales (e.g. &quot;03M&quot;) mean more detailed polygon shapes and thus</span>
+<span class="sd">        longer running times. Larger scales (e.g. &quot;60M&quot;) mean less detailed</span>
+<span class="sd">        polygon shapes and thus shorter running times. Available values:</span>
+<span class="sd">        ``&quot;60M&quot;``, ``&quot;20M&quot;``, ``&quot;10M&quot;``, ``&quot;03M&quot;`` or ``&quot;01M&quot;``. For a visual</span>
+<span class="sd">        explanation, see</span>
+<span class="sd">        https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png</span>
+<span class="sd">    nuts_year : int (default = 2021)</span>
+<span class="sd">        The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.</span>
+<span class="sd">    coord_system : int (default = 4326)</span>
+<span class="sd">        4-digit EPSG code (a unique identifier for different coordinate</span>
+<span class="sd">        systems). Available values: ``4326`` (WGS84, coordinates in decimal</span>
+<span class="sd">        degrees), ``3035`` (ETRS 1989 in Lambert Azimutal projection with</span>
+<span class="sd">        centre in E52N10, coordinates in meters), ``3857`` (WGS84 Web Mercator</span>
+<span class="sd">        Auxiliary Sphere, coordinates in meters).</span>
+
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -566,7 +588,7 @@
 <span class="sd">        The wordcloud map as a matplotlib Figure object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">download_shapefiles</span><span class="p">()</span>
+    <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">download_shapefiles</span><span class="p">(</span><span class="n">border_detail</span><span class="p">,</span> <span class="n">nuts_year</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">)</span>
     <span class="n">unique_codes</span> <span class="o">=</span> <span class="n">get_unique_codes</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">nuts_codes</span><span class="p">)</span>
     <span class="n">Xmin</span><span class="p">,</span> <span class="n">Ymin</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span> <span class="o">=</span> <span class="n">get_bbox_map</span><span class="p">(</span><span class="n">shapefiles</span><span class="p">,</span> <span class="n">unique_codes</span><span class="p">)</span>
 

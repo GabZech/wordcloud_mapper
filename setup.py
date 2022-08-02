@@ -50,6 +50,6 @@ setup(
     project_urls={
         'Documentation': 'https://gabzech.github.io/wordcloud_mapper',
     },
-    version='0.1.0',
+    version='0.1.1',
     zip_safe=False,
 )

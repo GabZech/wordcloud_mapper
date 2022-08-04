@@ -1,3 +1,4 @@
+from asyncio import mixins
 from shapefile import Reader
 from numpy import unique, frombuffer, reshape, fromiter, uint8
 import matplotlib.pyplot as plt
@@ -239,7 +240,9 @@ def get_data(df,
     return dict(zip(df_temp[words], df_temp[word_counts]))
 
 
-def plot_region(mask,
+def plot_region(height,
+                width,
+                mask,
                 data,
                 ax,
                 bbox,
@@ -247,6 +250,7 @@ def plot_region(mask,
                 rendering_quality=1,
                 min_font_size=4,
                 max_font_size=None,
+                font_step=1,
                 max_words=200,
                 relative_scaling=0.5,
                 prefer_horizontal=0.9,
@@ -297,7 +301,7 @@ def plot_region(mask,
         The ratio of times to try horizontal fitting as opposed to vertical. If
         ``prefer_horizontal = 1``, no words will be placed vertically. If
         ``prefer_horizontal < 1``, the algorithm will try rotating the word if
-        it doesn’t fit.
+        it doesn't fit.
     repeat : bool (default = False)
         Whether to repeat already-placed words until ``max_words`` or
         ``min_font_size`` is reached.
@@ -372,13 +376,16 @@ def plot_region(mask,
         func = colour_func_frequency
 
     # create wordcloud
-    wc = WordCloud(mask=mask,
+    wc = WordCloud(height=height,
+                   width=width,
+                   mask=mask,
                    background_color=None,
                    mode="RGBA",
                    scale=rendering_quality,
                    color_func=func,
                    min_font_size=min_font_size,
                    max_font_size=max_font_size,
+                   font_step=font_step,
                    max_words=max_words,
                    relative_scaling=relative_scaling,
                    prefer_horizontal=prefer_horizontal,
@@ -426,7 +433,8 @@ def wordcloud_map(df,
                   scale=1,
                   rendering_quality=1,
                   min_font_size=4,
-                  max_font_size=None,
+                  max_font_size=40,
+                  font_step=1,
                   max_words=200,
                   relative_scaling=0.5,
                   prefer_horizontal=0.9,
@@ -532,18 +540,52 @@ def wordcloud_map(df,
     ax.set_xlim(Xmin, Xmax)
     ax.set_ylim(Ymin, Ymax)
 
+    # TEST
+    areas = []
+    heights = []
+    for i, shaperecord in enumerate(shapefiles.shapeRecords()):
+            if shaperecord.record.NUTS_ID in unique_codes:
+                bbox = get_bbox_region(shaperecord)
+                minX, maxX, minY, maxY = bbox
+                width = maxX - minX
+                height = maxY - minY
+                area = height*width
+                
+                areas.append(area)
+                heights.append(height)
+    
+    min_area = min(areas)
+    min_height = min(heights)
+
     for i, shaperecord in enumerate(shapefiles.shapeRecords()):
         if shaperecord.record.NUTS_ID in unique_codes:
             mask = get_mask(shaperecord, resolution=100)
             data = get_data(df, nuts_codes, words, word_counts,
                             shaperecord.record.NUTS_ID)
             bbox = get_bbox_region(shaperecord)
+            
+            #TEST
+            minX, maxX, minY, maxY = bbox
+            width = maxX - minX
+            height = maxY - minY
+            area = height*width
+            # print(f"height {height}, width {width}")
+            #max_font_size=max_font_size
+            font_size=((min_area/area)*max_font_size)
+            font_size=((min_height/height)*200)
+            print(f"font size float {font_size}, int {int(round(font_size))}")
+            print(f"area {area}")
+            print(f"min_area/area {min_area/area}")
+            #print(f"height {height}")
+
             plot_contour(shaperecord, ax, bbox, resolution=border_sharpness)
-            plot_region(mask=mask, data=data, ax=ax, bbox=bbox,
+            plot_region(width=100000*(1/width), height=100000*(1/height),
+                        mask=mask, data=data, ax=ax, bbox=bbox,
                         colour_func=colour_func,
                         rendering_quality=rendering_quality,
                         min_font_size=min_font_size,
-                        max_font_size=max_font_size,
+                        max_font_size=int(font_size),
+                        font_step=font_step,
                         max_words=max_words,
                         relative_scaling=relative_scaling,
                         prefer_horizontal=prefer_horizontal,

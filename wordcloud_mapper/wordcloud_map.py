@@ -431,7 +431,8 @@ def wordcloud_map(df,
                   relative_scaling=0.5,
                   prefer_horizontal=0.9,
                   repeat=False,
-                  border_detail="10M",
+                  border_scale="10M",
+                  border_sharpness=100,
                   nuts_year=2021,
                   coord_system=4326
                   ):
@@ -488,7 +489,7 @@ def wordcloud_map(df,
     repeat : bool (default = False)
         Whether to repeat already-placed words until ``max_words`` or
         ``min_font_size`` is reached.
-    border_detail : str (default = "10M")
+    border_scale : str (default = "10M")
         How detailed the regions' borders (i.e. the polygon shapefiles) should 
         be, based on the official NUTS values used to download shapefiles.
         Smaller scales (e.g. "03M") mean more detailed polygon shapes and thus
@@ -497,6 +498,12 @@ def wordcloud_map(df,
         ``"60M"``, ``"20M"``, ``"10M"``, ``"03M"`` or ``"01M"``. For a visual
         explanation, see
         https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png
+    border_sharpness : float or int (default = 100)
+        Defines how sharp the regions' borders look. Higher values create 
+        sharper regional border lines but might take considerably longer to 
+        run. Change to higher values if zooming into the map is necessary.
+        The value used relates to the DPI (dots per inch) used when generating 
+        the mask images.
     nuts_year : int (default = 2021)
         The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.
     coord_system : int (default = 4326)
@@ -513,7 +520,7 @@ def wordcloud_map(df,
         The wordcloud map as a matplotlib Figure object.
 
     """
-    shapefiles = download_shapefiles(border_detail, nuts_year, coord_system)
+    shapefiles = download_shapefiles(border_scale, nuts_year, coord_system)
     unique_codes = get_unique_codes(df, nuts_codes)
     Xmin, Ymin, Xmax, Ymax = get_bbox_map(shapefiles, unique_codes)
 
@@ -527,11 +534,11 @@ def wordcloud_map(df,
 
     for i, shaperecord in enumerate(shapefiles.shapeRecords()):
         if shaperecord.record.NUTS_ID in unique_codes:
-            mask = get_mask(shaperecord, resolution=200)
+            mask = get_mask(shaperecord, resolution=100)
             data = get_data(df, nuts_codes, words, word_counts,
                             shaperecord.record.NUTS_ID)
             bbox = get_bbox_region(shaperecord)
-            plot_contour(shaperecord, ax, bbox, resolution=100)
+            plot_contour(shaperecord, ax, bbox, resolution=border_sharpness)
             plot_region(mask=mask, data=data, ax=ax, bbox=bbox,
                         colour_func=colour_func,
                         rendering_quality=rendering_quality,

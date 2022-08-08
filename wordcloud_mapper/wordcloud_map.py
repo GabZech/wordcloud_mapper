@@ -499,7 +499,7 @@ def wordcloud_map(df,
         explanation, see
         https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png
     border_sharpness : float or int (default = 100)
-        Defines how sharp the regions' borders look. Higher values create 
+        Defines how sharp the regions' border lines look. Higher values create 
         sharper regional border lines but might take considerably longer to 
         run. Change to higher values if zooming into the map is necessary.
         The value used relates to the DPI (dots per inch) used when generating 

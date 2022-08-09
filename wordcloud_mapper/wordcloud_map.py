@@ -209,7 +209,9 @@ def get_data(df,
              nuts_codes,
              words,
              word_counts,
-             nuts_code):
+             nuts_code,
+             max_words
+             ):
     """
     For a given NUTS code, retreive its words and their count/frequency from
     the DataFrame containing all data.
@@ -226,6 +228,8 @@ def get_data(df,
         Name of the column in the DataFrame containing the word counts.
     nuts_code : str
         The NUTS code to filter on.
+    max_words : int
+        The number of words to plot on the wordcloud.
 
     Returns
     -------
@@ -234,9 +238,13 @@ def get_data(df,
         the given NUTS region.
 
     """
-    df_temp = df.loc[df[nuts_codes] == nuts_code]
+    # filter by nuts code, sort and select the top words
+    df_temp = df.loc[df[nuts_codes] == nuts_code]\
+                .sort_values(word_counts, ascending=False)\
+                .head(max_words)
+    dic = dict(zip(df_temp[words], df_temp[word_counts]))
 
-    return dict(zip(df_temp[words], df_temp[word_counts]))
+    return dic
 
 
 def plot_region(mask,
@@ -586,7 +594,7 @@ def wordcloud_map(df,
         if shaperecord.record.NUTS_ID in unique_codes:
             mask = get_mask(shaperecord, resolution=100)
             data = get_data(df, nuts_codes, words, word_counts,
-                            shaperecord.record.NUTS_ID)
+                            shaperecord.record.NUTS_ID, max_words)
             bbox = get_bbox_region(shaperecord)
             plot_contour(shaperecord, ax, bbox, resolution=border_sharpness)
             plot_region(mask=mask, data=data, ax=ax, bbox=bbox,

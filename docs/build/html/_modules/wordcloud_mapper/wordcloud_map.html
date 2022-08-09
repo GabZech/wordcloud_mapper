@@ -284,7 +284,9 @@
              <span class="n">nuts_codes</span><span class="p">,</span>
              <span class="n">words</span><span class="p">,</span>
              <span class="n">word_counts</span><span class="p">,</span>
-             <span class="n">nuts_code</span><span class="p">):</span>
+             <span class="n">nuts_code</span><span class="p">,</span>
+             <span class="n">max_words</span>
+             <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a given NUTS code, retreive its words and their count/frequency from</span>
 <span class="sd">    the DataFrame containing all data.</span>
@@ -301,6 +303,8 @@
 <span class="sd">        Name of the column in the DataFrame containing the word counts.</span>
 <span class="sd">    nuts_code : str</span>
 <span class="sd">        The NUTS code to filter on.</span>
+<span class="sd">    max_words : int</span>
+<span class="sd">        The number of words to plot on the wordcloud.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -309,9 +313,13 @@
 <span class="sd">        the given NUTS region.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">nuts_codes</span><span class="p">]</span> <span class="o">==</span> <span class="n">nuts_code</span><span class="p">]</span>
+    <span class="c1"># filter by nuts code, sort and select the top words</span>
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">nuts_codes</span><span class="p">]</span> <span class="o">==</span> <span class="n">nuts_code</span><span class="p">]</span>\
+                <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">max_words</span><span class="p">)</span>
+    <span class="n">dic</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df_temp</span><span class="p">[</span><span class="n">words</span><span class="p">],</span> <span class="n">df_temp</span><span class="p">[</span><span class="n">word_counts</span><span class="p">]))</span>
 
-    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df_temp</span><span class="p">[</span><span class="n">words</span><span class="p">],</span> <span class="n">df_temp</span><span class="p">[</span><span class="n">word_counts</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">dic</span>
 
 
 <span class="k">def</span> <span class="nf">plot_region</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span>
@@ -661,7 +669,7 @@
         <span class="k">if</span> <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span> <span class="ow">in</span> <span class="n">unique_codes</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">get_mask</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">nuts_codes</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">word_counts</span><span class="p">,</span>
-                            <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span><span class="p">)</span>
+                            <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span><span class="p">,</span> <span class="n">max_words</span><span class="p">)</span>
             <span class="n">bbox</span> <span class="o">=</span> <span class="n">get_bbox_region</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">)</span>
             <span class="n">plot_contour</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">border_sharpness</span><span class="p">)</span>
             <span class="n">plot_region</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>

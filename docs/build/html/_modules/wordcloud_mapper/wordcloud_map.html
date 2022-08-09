@@ -347,7 +347,9 @@
 <span class="sd">        ``&quot;random&quot;`` sets a random luminosity to each word within a region,</span>
 <span class="sd">        ``&quot;frequency&quot;`` sets the luminosity of each word according to their</span>
 <span class="sd">        frequency/word count, where the most frequent word receives the max</span>
-<span class="sd">        luminosity of 50.</span>
+<span class="sd">        luminosity of 50,</span>
+<span class="sd">         ``&quot;rank&quot;`` set the luminosity of each word according to their rank,</span>
+<span class="sd">        where the word with rank=1 receives the max luminosity of 50.</span>
 <span class="sd">    rendering_quality : int (default = 1)</span>
 <span class="sd">        The rendering quality of the words in the wordcloud. Higher values</span>
 <span class="sd">        produce better-looking / sharper words but take longer to run.</span>
@@ -372,7 +374,7 @@
 <span class="sd">        The ratio of times to try horizontal fitting as opposed to vertical. If</span>
 <span class="sd">        ``prefer_horizontal = 1``, no words will be placed vertically. If</span>
 <span class="sd">        ``prefer_horizontal &lt; 1``, the algorithm will try rotating the word if</span>
-<span class="sd">        it doesn’t fit.</span>
+<span class="sd">        it doesn&#39;t fit.</span>
 <span class="sd">    repeat : bool (default = False)</span>
 <span class="sd">        Whether to repeat already-placed words until ``max_words`` or</span>
 <span class="sd">        ``min_font_size`` is reached.</span>
@@ -433,8 +435,49 @@
         <span class="n">data_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">fromiter</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
                      <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> \
             <span class="o">/</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+        <span class="c1"># get index of the current word</span>
         <span class="n">word_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
+        <span class="c1"># set saturation and luminosity values</span>
+        <span class="n">sat</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">lum</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">data_norm</span><span class="p">[</span><span class="n">word_index</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="s2">&quot;hsl(</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">%, </span><span class="si">{}</span><span class="s2">%)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hue</span><span class="p">,</span> <span class="n">sat</span><span class="p">,</span> <span class="n">lum</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">colour_func_rank</span><span class="p">(</span><span class="n">word</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the luminosity of each word according to their rank, where the</span>
+<span class="sd">        word with rank=1 receives the max luminosity of 50.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        word : str</span>
+<span class="sd">            The word being plotted.</span>
+
+<span class="sd">        Other Parameters</span>
+<span class="sd">        ----------------</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Keyword arguments passed to the colour function of the wordcloud.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            String containing HSL colour values.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># sort according to ascending values and normalise</span>
+        <span class="n">data_ranked</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                               <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])}</span>
+        <span class="n">data_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">fromiter</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                     <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> \
+            <span class="o">/</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+        <span class="c1"># get index of the current word</span>
+        <span class="n">word_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+
+        <span class="c1"># set saturation and luminosity values</span>
         <span class="n">sat</span> <span class="o">=</span> <span class="mi">100</span>
         <span class="n">lum</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">data_norm</span><span class="p">[</span><span class="n">word_index</span><span class="p">]</span>
 
@@ -445,6 +488,8 @@
         <span class="n">func</span> <span class="o">=</span> <span class="n">colour_func_random</span>
     <span class="k">elif</span> <span class="n">colour_func</span> <span class="o">==</span> <span class="s2">&quot;frequency&quot;</span><span class="p">:</span>
         <span class="n">func</span> <span class="o">=</span> <span class="n">colour_func_frequency</span>
+    <span class="k">elif</span> <span class="n">colour_func</span> <span class="o">==</span> <span class="s2">&quot;rank&quot;</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">colour_func_rank</span>
 
     <span class="c1"># create wordcloud</span>
     <span class="n">wc</span> <span class="o">=</span> <span class="n">WordCloud</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
@@ -517,7 +562,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    df : DataFrame</span>
-<span class="sd">        DataFrame object containing columns with NUTS codes, words and word counts.</span>
+<span class="sd">        DataFrame object containing columns with NUTS codes, words and word</span>
+<span class="sd">        counts.</span>
 <span class="sd">    nuts_codes : str</span>
 <span class="sd">        Name of the column in the DataFrame containing the NUTS codes.</span>
 <span class="sd">    words : str</span>
@@ -526,10 +572,17 @@
 <span class="sd">        Name of the column in the DataFrame containing the word counts.</span>
 <span class="sd">    colour_func : str (default = &quot;random&quot;)</span>
 <span class="sd">        String indicating which colour function to use. Available values:</span>
-<span class="sd">        ``&quot;random&quot;`` sets a random luminosity to each word within a region,</span>
+<span class="sd">        ``&quot;random&quot;`` sets a random luminosity between 0 and 50 for each word</span>
+<span class="sd">        within a region.</span>
 <span class="sd">        ``&quot;frequency&quot;`` sets the luminosity of each word according to their</span>
-<span class="sd">        frequency/word count, where the most frequent word receives the max</span>
-<span class="sd">        luminosity of 50.</span>
+<span class="sd">        relative frequency/word count, e.g. if the most frequent word has value</span>
+<span class="sd">         100 and the second most frequent word has value 50, the former</span>
+<span class="sd">        receives a luminosity = 50 and the latter = 25. Produces best results</span>
+<span class="sd">        when ``relative_scaling = 1``.</span>
+<span class="sd">         ``&quot;rank&quot;`` set the luminosity of each word according to their rank,</span>
+<span class="sd">        e.g. if there are 5 words, the most frequent word receives luminosity =</span>
+<span class="sd">         50, the second most frequent receives luminosity = 40, and so on.</span>
+<span class="sd">        Produces best results when ``relative_scaling = 0``.</span>
 <span class="sd">    scale : float (default = 1)</span>
 <span class="sd">        The scale of the produced figure. The given value works as a multiplier</span>
 <span class="sd">        of matplotlib&#39;s default figure size. If ``scale = 1.0``, retains</span>
@@ -565,7 +618,7 @@
 <span class="sd">        Whether to repeat already-placed words until ``max_words`` or</span>
 <span class="sd">        ``min_font_size`` is reached.</span>
 <span class="sd">    border_scale : str (default = &quot;10M&quot;)</span>
-<span class="sd">        How detailed the regions&#39; borders (i.e. the polygon shapefiles) should </span>
+<span class="sd">        How detailed the regions&#39; borders (i.e. the polygon shapefiles) should</span>
 <span class="sd">        be, based on the official NUTS values used to download shapefiles.</span>
 <span class="sd">        Smaller scales (e.g. &quot;03M&quot;) mean more detailed polygon shapes and thus</span>
 <span class="sd">        longer running times. Larger scales (e.g. &quot;60M&quot;) mean less detailed</span>
@@ -574,10 +627,10 @@
 <span class="sd">        explanation, see</span>
 <span class="sd">        https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png</span>
 <span class="sd">    border_sharpness : float or int (default = 100)</span>
-<span class="sd">        Defines how sharp the regions&#39; border lines look. Higher values create </span>
-<span class="sd">        sharper regional border lines but might take considerably longer to </span>
+<span class="sd">        Defines how sharp the regions&#39; border lines look. Higher values create</span>
+<span class="sd">        sharper regional border lines but might take considerably longer to</span>
 <span class="sd">        run. Change to higher values if zooming into the map is necessary.</span>
-<span class="sd">        The value used relates to the DPI (dots per inch) used when generating </span>
+<span class="sd">        The value used relates to the DPI (dots per inch) used when generating</span>
 <span class="sd">        the mask images.</span>
 <span class="sd">    nuts_year : int (default = 2021)</span>
 <span class="sd">        The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.</span>

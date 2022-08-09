@@ -76,6 +76,7 @@
 <span></span><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">read_csv</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">resources</span>
 
+
 <div class="viewcode-block" id="load_companies"><a class="viewcode-back" href="../../functions.html#wordcloud_mapper.load_companies">[docs]</a><span class="k">def</span> <span class="nf">load_companies</span><span class="p">(</span><span class="n">country</span><span class="o">=</span><span class="s2">&quot;DEU&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load dummy datasets for either Germany (&quot;DEU&quot;) or Italy (&quot;ITA&quot;). These</span>
@@ -87,7 +88,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    country : str, optional (default = &quot;DEU&quot;)</span>
-<span class="sd">        If ``country = &quot;DEU&quot;``, loads the German dataset. </span>
+<span class="sd">        If ``country = &quot;DEU&quot;``, loads the German dataset.</span>
 <span class="sd">        If ``country = &quot;ITA&quot;``, loads the Italian dataset.</span>
 
 <span class="sd">    Returns</span>
@@ -95,7 +96,8 @@
 <span class="sd">    DataFrame</span>
 <span class="sd">        The DataFrame corresponding to the chosen country.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">resources</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;wordcloud_mapper.data&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;companies_</span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">df</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">resources</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;wordcloud_mapper.data&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;companies_</span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">df</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span></div>
 </pre></div>
 

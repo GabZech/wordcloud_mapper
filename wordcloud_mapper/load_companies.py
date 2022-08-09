@@ -1,6 +1,7 @@
 from pandas import read_csv
 from importlib import resources
 
+
 def load_companies(country="DEU"):
     """
     Load dummy datasets for either Germany ("DEU") or Italy ("ITA"). These
@@ -12,7 +13,7 @@ def load_companies(country="DEU"):
     Parameters
     ----------
     country : str, optional (default = "DEU")
-        If ``country = "DEU"``, loads the German dataset. 
+        If ``country = "DEU"``, loads the German dataset.
         If ``country = "ITA"``, loads the Italian dataset.
 
     Returns
@@ -20,5 +21,6 @@ def load_companies(country="DEU"):
     DataFrame
         The DataFrame corresponding to the chosen country.
     """
-    with resources.path("wordcloud_mapper.data", f"companies_{country}.csv") as df:
+    with resources.path("wordcloud_mapper.data",
+                        f"companies_{country}.csv") as df:
         return read_csv(df, encoding='utf-8')

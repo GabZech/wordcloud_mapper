@@ -272,7 +272,9 @@ def plot_region(mask,
         ``"random"`` sets a random luminosity to each word within a region,
         ``"frequency"`` sets the luminosity of each word according to their
         frequency/word count, where the most frequent word receives the max
-        luminosity of 50.
+        luminosity of 50,
+         ``"rank"`` set the luminosity of each word according to their rank,
+        where the word with rank=1 receives the max luminosity of 50.
     rendering_quality : int (default = 1)
         The rendering quality of the words in the wordcloud. Higher values
         produce better-looking / sharper words but take longer to run.
@@ -297,7 +299,7 @@ def plot_region(mask,
         The ratio of times to try horizontal fitting as opposed to vertical. If
         ``prefer_horizontal = 1``, no words will be placed vertically. If
         ``prefer_horizontal < 1``, the algorithm will try rotating the word if
-        it doesn’t fit.
+        it doesn't fit.
     repeat : bool (default = False)
         Whether to repeat already-placed words until ``max_words`` or
         ``min_font_size`` is reached.
@@ -358,8 +360,49 @@ def plot_region(mask,
         data_norm = (fromiter(data.values(), dtype=float)
                      - min(data.values())) \
             / (max(data.values()) - min(data.values()))
+
+        # get index of the current word
         word_index = list(data.keys()).index(word)
 
+        # set saturation and luminosity values
+        sat = 100
+        lum = 50 * data_norm[word_index]
+
+        return "hsl({}, {}%, {}%)".format(hue, sat, lum)
+
+    def colour_func_rank(word,
+                         **kwargs):
+        """
+        Set the luminosity of each word according to their rank, where the
+        word with rank=1 receives the max luminosity of 50.
+
+        Parameters
+        ----------
+        word : str
+            The word being plotted.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            Keyword arguments passed to the colour function of the wordcloud.
+
+        Returns
+        -------
+        str
+            String containing HSL colour values.
+
+        """
+        # sort according to ascending values and normalise
+        data_ranked = {k: v for k, v in sorted(data.items(),
+                                               key=lambda item: item[1])}
+        data_norm = (fromiter(data_ranked.values(), dtype=float)
+                     - min(data_ranked.values())) \
+            / (max(data_ranked.values()) - min(data_ranked.values()))
+
+        # get index of the current word
+        word_index = list(data_ranked.keys()).index(word)
+
+        # set saturation and luminosity values
         sat = 100
         lum = 50 * data_norm[word_index]
 
@@ -370,6 +413,8 @@ def plot_region(mask,
         func = colour_func_random
     elif colour_func == "frequency":
         func = colour_func_frequency
+    elif colour_func == "rank":
+        func = colour_func_rank
 
     # create wordcloud
     wc = WordCloud(mask=mask,
@@ -442,7 +487,8 @@ def wordcloud_map(df,
     Parameters
     ----------
     df : DataFrame
-        DataFrame object containing columns with NUTS codes, words and word counts.
+        DataFrame object containing columns with NUTS codes, words and word
+        counts.
     nuts_codes : str
         Name of the column in the DataFrame containing the NUTS codes.
     words : str
@@ -451,10 +497,17 @@ def wordcloud_map(df,
         Name of the column in the DataFrame containing the word counts.
     colour_func : str (default = "random")
         String indicating which colour function to use. Available values:
-        ``"random"`` sets a random luminosity to each word within a region,
+        ``"random"`` sets a random luminosity between 0 and 50 for each word
+        within a region.
         ``"frequency"`` sets the luminosity of each word according to their
-        frequency/word count, where the most frequent word receives the max
-        luminosity of 50.
+        relative frequency/word count, e.g. if the most frequent word has value
+         100 and the second most frequent word has value 50, the former
+        receives a luminosity = 50 and the latter = 25. Produces best results
+        when ``relative_scaling = 1``.
+         ``"rank"`` set the luminosity of each word according to their rank,
+        e.g. if there are 5 words, the most frequent word receives luminosity =
+         50, the second most frequent receives luminosity = 40, and so on.
+        Produces best results when ``relative_scaling = 0``.
     scale : float (default = 1)
         The scale of the produced figure. The given value works as a multiplier
         of matplotlib's default figure size. If ``scale = 1.0``, retains
@@ -490,7 +543,7 @@ def wordcloud_map(df,
         Whether to repeat already-placed words until ``max_words`` or
         ``min_font_size`` is reached.
     border_scale : str (default = "10M")
-        How detailed the regions' borders (i.e. the polygon shapefiles) should 
+        How detailed the regions' borders (i.e. the polygon shapefiles) should
         be, based on the official NUTS values used to download shapefiles.
         Smaller scales (e.g. "03M") mean more detailed polygon shapes and thus
         longer running times. Larger scales (e.g. "60M") mean less detailed
@@ -499,10 +552,10 @@ def wordcloud_map(df,
         explanation, see
         https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png
     border_sharpness : float or int (default = 100)
-        Defines how sharp the regions' border lines look. Higher values create 
-        sharper regional border lines but might take considerably longer to 
+        Defines how sharp the regions' border lines look. Higher values create
+        sharper regional border lines but might take considerably longer to
         run. Change to higher values if zooming into the map is necessary.
-        The value used relates to the DPI (dots per inch) used when generating 
+        The value used relates to the DPI (dots per inch) used when generating
         the mask images.
     nuts_year : int (default = 2021)
         The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.

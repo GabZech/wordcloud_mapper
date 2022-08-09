@@ -87,10 +87,11 @@
 <dt class="sig sig-object py" id="wordcloud_mapper.wordcloud_map">
 <span class="sig-prename descclassname"><span class="pre">wordcloud_mapper.</span></span><span class="sig-name descname"><span class="pre">wordcloud_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuts_codes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word_counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rendering_quality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_words</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_scaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer_horizontal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'10M'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_sharpness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuts_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coord_system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4326</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wordcloud_mapper/wordcloud_map.html#wordcloud_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wordcloud_mapper.wordcloud_map" title="Permalink to this definition"></a></dt>
 <dd><p>Create a wordcloud map using data from a DataFrame.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>df</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame object containing columns with NUTS codes, words and word counts.</p>
+<dd class="field-odd"><dl>
+<dt><strong>df</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame object containing columns with NUTS codes, words and word
+counts.</p>
 </dd>
 <dt><strong>nuts_codes</strong><span class="classifier">str</span></dt><dd><p>Name of the column in the DataFrame containing the NUTS codes.</p>
 </dd>
@@ -99,10 +100,23 @@
 <dt><strong>word_counts</strong><span class="classifier">str</span></dt><dd><p>Name of the column in the DataFrame containing the word counts.</p>
 </dd>
 <dt><strong>colour_func</strong><span class="classifier">str (default = “random”)</span></dt><dd><p>String indicating which colour function to use. Available values:
-<code class="docutils literal notranslate"><span class="pre">&quot;random&quot;</span></code> sets a random luminosity to each word within a region,
+<code class="docutils literal notranslate"><span class="pre">&quot;random&quot;</span></code> sets a random luminosity between 0 and 50 for each word
+within a region.
 <code class="docutils literal notranslate"><span class="pre">&quot;frequency&quot;</span></code> sets the luminosity of each word according to their
-frequency/word count, where the most frequent word receives the max
-luminosity of 50.</p>
+relative frequency/word count, e.g. if the most frequent word has value</p>
+<blockquote>
+<div><p>100 and the second most frequent word has value 50, the former</p>
+</div></blockquote>
+<p>receives a luminosity = 50 and the latter = 25. Produces best results
+when <code class="docutils literal notranslate"><span class="pre">relative_scaling</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">&quot;rank&quot;</span></code> set the luminosity of each word according to their rank,</p>
+</div></blockquote>
+<dl class="simple">
+<dt>e.g. if there are 5 words, the most frequent word receives luminosity =</dt><dd><p>50, the second most frequent receives luminosity = 40, and so on.</p>
+</dd>
+</dl>
+<p>Produces best results when <code class="docutils literal notranslate"><span class="pre">relative_scaling</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p>
 </dd>
 <dt><strong>scale</strong><span class="classifier">float (default = 1)</span></dt><dd><p>The scale of the produced figure. The given value works as a multiplier
 of matplotlib’s default figure size. If <code class="docutils literal notranslate"><span class="pre">scale</span> <span class="pre">=</span> <span class="pre">1.0</span></code>, retains
@@ -138,7 +152,7 @@ it doesn’t fit.</p>
 <dt><strong>repeat</strong><span class="classifier">bool (default = False)</span></dt><dd><p>Whether to repeat already-placed words until <code class="docutils literal notranslate"><span class="pre">max_words</span></code> or
 <code class="docutils literal notranslate"><span class="pre">min_font_size</span></code> is reached.</p>
 </dd>
-<dt><strong>border_scale</strong><span class="classifier">str (default = “10M”)</span></dt><dd><p>How detailed the regions’ borders (i.e. the polygon shapefiles) should 
+<dt><strong>border_scale</strong><span class="classifier">str (default = “10M”)</span></dt><dd><p>How detailed the regions’ borders (i.e. the polygon shapefiles) should
 be, based on the official NUTS values used to download shapefiles.
 Smaller scales (e.g. “03M”) mean more detailed polygon shapes and thus
 longer running times. Larger scales (e.g. “60M”) mean less detailed
@@ -147,10 +161,10 @@ polygon shapes and thus shorter running times. Available values:
 explanation, see
 <a class="reference external" href="https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png">https://raw.githubusercontent.com/ropengov/giscoR/master/img/README-example-1.png</a></p>
 </dd>
-<dt><strong>border_sharpness</strong><span class="classifier">float or int (default = 100)</span></dt><dd><p>Defines how sharp the regions’ border lines look. Higher values create 
-sharper regional border lines but might take considerably longer to 
+<dt><strong>border_sharpness</strong><span class="classifier">float or int (default = 100)</span></dt><dd><p>Defines how sharp the regions’ border lines look. Higher values create
+sharper regional border lines but might take considerably longer to
 run. Change to higher values if zooming into the map is necessary.
-The value used relates to the DPI (dots per inch) used when generating 
+The value used relates to the DPI (dots per inch) used when generating
 the mask images.</p>
 </dd>
 <dt><strong>nuts_year</strong><span class="classifier">int (default = 2021)</span></dt><dd><p>The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.</p>
@@ -209,7 +223,7 @@ publicly by People Data Labs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>country</strong><span class="classifier">str, optional (default = “DEU”)</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">country</span> <span class="pre">=</span> <span class="pre">&quot;DEU&quot;</span></code>, loads the German dataset. 
+<dt><strong>country</strong><span class="classifier">str, optional (default = “DEU”)</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">country</span> <span class="pre">=</span> <span class="pre">&quot;DEU&quot;</span></code>, loads the German dataset.
 If <code class="docutils literal notranslate"><span class="pre">country</span> <span class="pre">=</span> <span class="pre">&quot;ITA&quot;</span></code>, loads the Italian dataset.</p>
 </dd>
 </dl>

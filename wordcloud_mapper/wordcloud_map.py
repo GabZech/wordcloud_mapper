@@ -392,19 +392,16 @@ def plot_region(mask,
             String containing HSL colour values.
 
         """
-        # sort according to ascending values and normalise
+        # sort according to ascending values
         data_ranked = {k: v for k, v in sorted(data.items(),
                                                key=lambda item: item[1])}
-        data_norm = (fromiter(data_ranked.values(), dtype=float)
-                     - min(data_ranked.values())) \
-            / (max(data_ranked.values()) - min(data_ranked.values()))
 
         # get index of the current word
         word_index = list(data_ranked.keys()).index(word)
 
         # set saturation and luminosity values
         sat = 100
-        lum = 50 * data_norm[word_index]
+        lum = (50 * word_index) / len(data_ranked)
 
         return "hsl({}, {}%, {}%)".format(hue, sat, lum)
 

@@ -467,19 +467,16 @@
 <span class="sd">            String containing HSL colour values.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># sort according to ascending values and normalise</span>
+        <span class="c1"># sort according to ascending values</span>
         <span class="n">data_ranked</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
                                                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])}</span>
-        <span class="n">data_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">fromiter</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-                     <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> \
-            <span class="o">/</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
 
         <span class="c1"># get index of the current word</span>
         <span class="n">word_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_ranked</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 
         <span class="c1"># set saturation and luminosity values</span>
         <span class="n">sat</span> <span class="o">=</span> <span class="mi">100</span>
-        <span class="n">lum</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">data_norm</span><span class="p">[</span><span class="n">word_index</span><span class="p">]</span>
+        <span class="n">lum</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span> <span class="o">*</span> <span class="n">word_index</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_ranked</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="s2">&quot;hsl(</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">%, </span><span class="si">{}</span><span class="s2">%)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hue</span><span class="p">,</span> <span class="n">sat</span><span class="p">,</span> <span class="n">lum</span><span class="p">)</span>
 

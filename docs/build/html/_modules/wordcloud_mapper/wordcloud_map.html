@@ -559,7 +559,8 @@
                   <span class="n">border_scale</span><span class="o">=</span><span class="s2">&quot;10M&quot;</span><span class="p">,</span>
                   <span class="n">border_sharpness</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                   <span class="n">nuts_year</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span>
-                  <span class="n">coord_system</span><span class="o">=</span><span class="mi">4326</span>
+                  <span class="n">coord_system</span><span class="o">=</span><span class="mi">3857</span><span class="p">,</span>
+                  <span class="n">shapefiles_path</span><span class="o">=</span><span class="kc">None</span>
                   <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a wordcloud map using data from a DataFrame.</span>
@@ -580,13 +581,14 @@
 <span class="sd">        ``&quot;random&quot;`` sets a random luminosity between 0 and 50 for each word</span>
 <span class="sd">        within a region.</span>
 <span class="sd">        ``&quot;frequency&quot;`` sets the luminosity of each word according to their</span>
-<span class="sd">        relative frequency/word count, e.g. if the most frequent word has value</span>
-<span class="sd">         100 and the second most frequent word has value 50, the former</span>
-<span class="sd">        receives a luminosity = 50 and the latter = 25. Produces best results</span>
-<span class="sd">        when ``relative_scaling = 1``.</span>
-<span class="sd">         ``&quot;rank&quot;`` set the luminosity of each word according to their rank,</span>
-<span class="sd">        e.g. if there are 5 words, the most frequent word receives luminosity =</span>
-<span class="sd">         50, the second most frequent receives luminosity = 40, and so on.</span>
+<span class="sd">        relative frequency or word count, e.g. if the most frequent word A has</span>
+<span class="sd">        value 100 and the second most frequent word B has value 50, word A</span>
+<span class="sd">        receives a luminosity = 50 and word B = 25.</span>
+<span class="sd">        Produces best results when ``relative_scaling = 1``.</span>
+<span class="sd">        ``&quot;rank&quot;`` sets the luminosity of each word according to their absolute</span>
+<span class="sd">        rank, e.g. if there are 5 words, the most frequent word receives</span>
+<span class="sd">        luminosity = 50, the second most frequent receives luminosity = 40,</span>
+<span class="sd">        and so on.</span>
 <span class="sd">        Produces best results when ``relative_scaling = 0``.</span>
 <span class="sd">    scale : float (default = 1)</span>
 <span class="sd">        The scale of the produced figure. The given value works as a multiplier</span>
@@ -639,13 +641,18 @@
 <span class="sd">        the mask images.</span>
 <span class="sd">    nuts_year : int (default = 2021)</span>
 <span class="sd">        The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.</span>
-<span class="sd">    coord_system : int (default = 4326)</span>
+<span class="sd">    coord_system : int (default = 3857)</span>
 <span class="sd">        4-digit EPSG code (a unique identifier for different coordinate</span>
 <span class="sd">        systems). Available values: ``4326`` (WGS84, coordinates in decimal</span>
 <span class="sd">        degrees), ``3035`` (ETRS 1989 in Lambert Azimutal projection with</span>
 <span class="sd">        centre in E52N10, coordinates in meters), ``3857`` (WGS84 Web Mercator</span>
 <span class="sd">        Auxiliary Sphere, coordinates in meters).</span>
-
+<span class="sd">    shapefiles_path : string or None (default = None)</span>
+<span class="sd">        Reads shapefiles from a local filepath instead of downloading from</span>
+<span class="sd">        GISCO&#39;s database as per default. Useful when internet access is</span>
+<span class="sd">        limited. Works with .shp or .zip files.</span>
+<span class="sd">        To get local files, visit:</span>
+<span class="sd">        https://ec.europa.eu/eurostat/de/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -653,7 +660,11 @@
 <span class="sd">        The wordcloud map as a matplotlib Figure object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">download_shapefiles</span><span class="p">(</span><span class="n">border_scale</span><span class="p">,</span> <span class="n">nuts_year</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shapefiles_path</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">shapefiles_path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shapefiles</span> <span class="o">=</span> <span class="n">download_shapefiles</span><span class="p">(</span><span class="n">border_scale</span><span class="p">,</span> <span class="n">nuts_year</span><span class="p">,</span> <span class="n">coord_system</span><span class="p">)</span>
+
     <span class="n">unique_codes</span> <span class="o">=</span> <span class="n">get_unique_codes</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">nuts_codes</span><span class="p">)</span>
     <span class="n">Xmin</span><span class="p">,</span> <span class="n">Ymin</span><span class="p">,</span> <span class="n">Xmax</span><span class="p">,</span> <span class="n">Ymax</span> <span class="o">=</span> <span class="n">get_bbox_map</span><span class="p">(</span><span class="n">shapefiles</span><span class="p">,</span> <span class="n">unique_codes</span><span class="p">)</span>
 

@@ -484,7 +484,8 @@ def wordcloud_map(df,
                   border_scale="10M",
                   border_sharpness=100,
                   nuts_year=2021,
-                  coord_system=4326
+                  coord_system=3857,
+                  shapefiles_path=None
                   ):
     """
     Create a wordcloud map using data from a DataFrame.
@@ -505,13 +506,14 @@ def wordcloud_map(df,
         ``"random"`` sets a random luminosity between 0 and 50 for each word
         within a region.
         ``"frequency"`` sets the luminosity of each word according to their
-        relative frequency/word count, e.g. if the most frequent word has value
-         100 and the second most frequent word has value 50, the former
-        receives a luminosity = 50 and the latter = 25. Produces best results
-        when ``relative_scaling = 1``.
-         ``"rank"`` set the luminosity of each word according to their rank,
-        e.g. if there are 5 words, the most frequent word receives luminosity =
-         50, the second most frequent receives luminosity = 40, and so on.
+        relative frequency or word count, e.g. if the most frequent word A has
+        value 100 and the second most frequent word B has value 50, word A
+        receives a luminosity = 50 and word B = 25.
+        Produces best results when ``relative_scaling = 1``.
+        ``"rank"`` sets the luminosity of each word according to their absolute
+        rank, e.g. if there are 5 words, the most frequent word receives
+        luminosity = 50, the second most frequent receives luminosity = 40,
+        and so on.
         Produces best results when ``relative_scaling = 0``.
     scale : float (default = 1)
         The scale of the produced figure. The given value works as a multiplier
@@ -564,13 +566,18 @@ def wordcloud_map(df,
         the mask images.
     nuts_year : int (default = 2021)
         The year of NUTS regulation, e.g. 2021, 2016, 2013, 2010, 2006 or 2003.
-    coord_system : int (default = 4326)
+    coord_system : int (default = 3857)
         4-digit EPSG code (a unique identifier for different coordinate
         systems). Available values: ``4326`` (WGS84, coordinates in decimal
         degrees), ``3035`` (ETRS 1989 in Lambert Azimutal projection with
         centre in E52N10, coordinates in meters), ``3857`` (WGS84 Web Mercator
         Auxiliary Sphere, coordinates in meters).
-
+    shapefiles_path : string or None (default = None)
+        Reads shapefiles from a local filepath instead of downloading from
+        GISCO's database as per default. Useful when internet access is
+        limited. Works with .shp or .zip files.
+        To get local files, visit:
+        https://ec.europa.eu/eurostat/de/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts
 
     Returns
     -------
@@ -578,7 +585,11 @@ def wordcloud_map(df,
         The wordcloud map as a matplotlib Figure object.
 
     """
-    shapefiles = download_shapefiles(border_scale, nuts_year, coord_system)
+    if shapefiles_path != None:
+        shapefiles = Reader(shapefiles_path)
+    else:
+        shapefiles = download_shapefiles(border_scale, nuts_year, coord_system)
+
     unique_codes = get_unique_codes(df, nuts_codes)
     Xmin, Ymin, Xmax, Ymax = get_bbox_map(shapefiles, unique_codes)
 

@@ -7,17 +7,17 @@ WordCloud_Mapper
         :alt: PyPI - Version
         :target: https://pypi.python.org/pypi/wordcloud_mapper
 
-.. image:: https://img.shields.io/github/pipenv/locked/python-version/GabZech/wordcloud_mapper   
+.. image:: https://img.shields.io/github/pipenv/locked/python-version/GabZech/wordcloud_mapper
         :alt: GitHub Pipenv locked Python version
 
-.. image:: https://img.shields.io/pypi/l/wordcloud_mapper 
+.. image:: https://img.shields.io/pypi/l/wordcloud_mapper
         :alt: PyPI - License
         :target: https://github.com/GabZech/wordcloud_mapper/blob/main/LICENSE
 
-.. image:: https://img.shields.io/github/repo-size/GabZech/wordcloud_mapper?color=white   
+.. image:: https://img.shields.io/github/repo-size/GabZech/wordcloud_mapper?color=white
         :alt: GitHub repo size
 
-`WordCloud_Mapper` is a Python package that allows one to **create wordclouds shaped like regions on a map**. 
+`WordCloud_Mapper` is a Python package that allows one to **create wordclouds shaped like regions on a map**.
 
 Such visualisations are especially useful when communicating sets of data that consist of many different observations and each observation is attributed to a specific region and size of occurrence. Take the example below, a dataset containing the name of the biggest companies (in terms of estimated number of employees) for each region in Germany and Italy in 2019.
 
@@ -44,9 +44,10 @@ or
 Features and usage
 ------------------
 
-* **Create a wordcloud map** from data stored in a DataFrame object using wordcloud_map().
-* **Easily resize a map** by any desired scaling factor using resize_map().
-* **Load dummy datasets** to test out the package's features using load_companies().
+* **Create a wordcloud map** from data stored in a DataFrame object using `wordcloud_map() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#wordcloud_map>`_.
+* **Easily resize a map** by any desired scaling factor using `resize_map() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#resize_map>`_.
+* **Load dummy datasets** to test out the package's features using `load_companies() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#load_companies>`_.
+* **Calculate how unique a word is** to a particular region in comparison to other regions by calculating the Term Frequency — Inverse Document Frequency (TF-IDF) score for each word in each region using `calc_tfidf() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#calc_tfidf>`_.
 
 See the `documentation <https://GabZech.github.io/wordcloud_mapper>`_ for more information on how to use the package and its functions.
 
@@ -63,6 +64,6 @@ In a future release, support nor non-NUTS regional referencing systems will be i
 Feedback and contributions
 --------------------------
 
-This package is under active development, so any feedback, recommendations, suggestions or contribution requests are more than welcome! 
+This package is under active development, so any feedback, recommendations, suggestions or contribution requests are more than welcome!
 
 Please read the contribution instructions or email g.dev@posteo.net if you would like to provide any feedback.

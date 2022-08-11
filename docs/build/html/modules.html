@@ -83,11 +83,14 @@
              
   <section id="features-and-usage">
 <h1>Features and usage<a class="headerlink" href="#features-and-usage" title="Permalink to this heading"></a></h1>
-<p>To start using <em>WordCloud_Mapper</em>, import the package with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">wordcloud_mapper</span>
+<ol class="arabic">
+<li><p>To start using <em>WordCloud_Mapper</em>, import the package with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">wordcloud_mapper</span> <span class="k">as</span> <span class="nn">wcm</span>
 </pre></div>
 </div>
-<p>After that, the following functions are available to use:</p>
+</li>
+<li><p>Then use any of the following functions to generate and customize you wordcloud_map:</p></li>
+</ol>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">wordcloud_map()</a></li>
@@ -96,6 +99,14 @@
 <li class="toctree-l1"><a class="reference internal" href="functions.html#calc-tfidf">calc_tfidf()</a></li>
 </ul>
 </div>
+<ol class="arabic" start="3">
+<li><p>When you’re happy with the results, save the image to the desired format (png, jpeg, svg, etc.) using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">map</span> <span class="o">=</span> <span class="n">wcm</span><span class="o">.</span><span class="n">wordcloud_map</span><span class="p">()</span> <span class="c1"># the generated matplotlib figure</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;path_to_image.png&quot;</span><span class="p">)</span> <span class="c1"># choose image format</span>
+</pre></div>
+</div>
+</li>
+</ol>
 </section>
 
 

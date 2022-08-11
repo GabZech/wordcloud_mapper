@@ -327,6 +327,7 @@
                 <span class="n">ax</span><span class="p">,</span>
                 <span class="n">bbox</span><span class="p">,</span>
                 <span class="n">colour_func</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                <span class="n">colour_hue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">rendering_quality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="n">min_font_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                 <span class="n">max_font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -358,6 +359,9 @@
 <span class="sd">        luminosity of 50,</span>
 <span class="sd">         ``&quot;rank&quot;`` set the luminosity of each word according to their rank,</span>
 <span class="sd">        where the word with rank=1 receives the max luminosity of 50.</span>
+<span class="sd">    colour_hue : int or None (default = None)</span>
+<span class="sd">        Sets one specific hue in the HSL colour system for all regions.</span>
+<span class="sd">        Choose an integer between 0 and 360.</span>
 <span class="sd">    rendering_quality : int (default = 1)</span>
 <span class="sd">        The rendering quality of the words in the wordcloud. Higher values</span>
 <span class="sd">        produce better-looking / sharper words but take longer to run.</span>
@@ -388,8 +392,15 @@
 <span class="sd">        ``min_font_size`` is reached.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># set a random hue colour</span>
-    <span class="n">hue</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+    <span class="c1"># check colour_hue input</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">colour_hue</span> <span class="o">&lt;=</span> <span class="mi">360</span><span class="p">:</span>
+        <span class="n">hue</span> <span class="o">=</span> <span class="n">colour_hue</span>
+    <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">colour_hue</span> <span class="o">&gt;</span> <span class="mi">360</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please choose an integer between 0 and 360&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># set a random hue colour</span>
+        <span class="n">hue</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">colour_func_random</span><span class="p">(</span><span class="n">word</span><span class="p">,</span>
                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -547,9 +558,10 @@
                   <span class="n">nuts_codes</span><span class="p">,</span>
                   <span class="n">words</span><span class="p">,</span>
                   <span class="n">word_counts</span><span class="p">,</span>
-                  <span class="n">colour_func</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
                   <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                   <span class="n">rendering_quality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">colour_func</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                  <span class="n">colour_hue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">min_font_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                   <span class="n">max_font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">max_words</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
@@ -576,6 +588,15 @@
 <span class="sd">        Name of the column in the DataFrame containing the words.</span>
 <span class="sd">    word_counts : str</span>
 <span class="sd">        Name of the column in the DataFrame containing the word counts.</span>
+<span class="sd">    scale : float (default = 1)</span>
+<span class="sd">        The scale of the produced figure. The given value works as a multiplier</span>
+<span class="sd">        of matplotlib&#39;s default figure size. If ``scale = 1.0``, retains</span>
+<span class="sd">        default figure size. If ``scale &gt; 1.0``, figure gets bigger by a factor</span>
+<span class="sd">        of scale (e.g. 1.5 means 50% bigger). If ``scale &lt; 1.0``, figure gets</span>
+<span class="sd">        smaller by a factor of scale (e.g. 0.5 means 50% smaller).</span>
+<span class="sd">    rendering_quality : int (default = 1)</span>
+<span class="sd">        The rendering quality of the words in the wordcloud. Higher values</span>
+<span class="sd">        produce better-looking / sharper words but take longer to run.</span>
 <span class="sd">    colour_func : str (default = &quot;random&quot;)</span>
 <span class="sd">        String indicating which colour function to use. Available values:</span>
 <span class="sd">        ``&quot;random&quot;`` sets a random luminosity between 0 and 50 for each word</span>
@@ -590,15 +611,9 @@
 <span class="sd">        luminosity = 50, the second most frequent receives luminosity = 40,</span>
 <span class="sd">        and so on.</span>
 <span class="sd">        Produces best results when ``relative_scaling = 0``.</span>
-<span class="sd">    scale : float (default = 1)</span>
-<span class="sd">        The scale of the produced figure. The given value works as a multiplier</span>
-<span class="sd">        of matplotlib&#39;s default figure size. If ``scale = 1.0``, retains</span>
-<span class="sd">        default figure size. If ``scale &gt; 1.0``, figure gets bigger by a factor</span>
-<span class="sd">        of scale (e.g. 1.5 means 50% bigger). If ``scale &lt; 1.0``, figure gets</span>
-<span class="sd">        smaller by a factor of scale (e.g. 0.5 means 50% smaller).</span>
-<span class="sd">    rendering_quality : int (default = 1)</span>
-<span class="sd">        The rendering quality of the words in the wordcloud. Higher values</span>
-<span class="sd">        produce better-looking / sharper words but take longer to run.</span>
+<span class="sd">    colour_hue : int or None (default = None)</span>
+<span class="sd">        Sets one specific hue in the HSL colour system for all regions.</span>
+<span class="sd">        Choose an integer between 0 and 360.</span>
 <span class="sd">    min_font_size : int (default = 4)</span>
 <span class="sd">        Smallest font size to use. Word placement will stop when there is no</span>
 <span class="sd">        more room to fit words of this size.</span>
@@ -685,6 +700,7 @@
             <span class="n">plot_contour</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">border_sharpness</span><span class="p">)</span>
             <span class="n">plot_region</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
                         <span class="n">colour_func</span><span class="o">=</span><span class="n">colour_func</span><span class="p">,</span>
+                        <span class="n">colour_hue</span><span class="o">=</span><span class="n">colour_hue</span><span class="p">,</span>
                         <span class="n">rendering_quality</span><span class="o">=</span><span class="n">rendering_quality</span><span class="p">,</span>
                         <span class="n">min_font_size</span><span class="o">=</span><span class="n">min_font_size</span><span class="p">,</span>
                         <span class="n">max_font_size</span><span class="o">=</span><span class="n">max_font_size</span><span class="p">,</span>

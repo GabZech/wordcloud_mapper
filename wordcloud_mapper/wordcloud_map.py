@@ -252,6 +252,7 @@ def plot_region(mask,
                 ax,
                 bbox,
                 colour_func="random",
+                colour_hue=None,
                 rendering_quality=1,
                 min_font_size=4,
                 max_font_size=None,
@@ -283,6 +284,9 @@ def plot_region(mask,
         luminosity of 50,
          ``"rank"`` set the luminosity of each word according to their rank,
         where the word with rank=1 receives the max luminosity of 50.
+    colour_hue : int or None (default = None)
+        Sets one specific hue in the HSL colour system for all regions.
+        Choose an integer between 0 and 360.
     rendering_quality : int (default = 1)
         The rendering quality of the words in the wordcloud. Higher values
         produce better-looking / sharper words but take longer to run.
@@ -313,8 +317,15 @@ def plot_region(mask,
         ``min_font_size`` is reached.
 
     """
-    # set a random hue colour
-    hue = randint(0, 360)
+    # check colour_hue input
+    if 0 <= colour_hue <= 360:
+        hue = colour_hue
+    elif 0 < colour_hue > 360:
+        print("Please choose an integer between 0 and 360")
+        return
+    else:
+        # set a random hue colour
+        hue = randint(0, 360)
 
     def colour_func_random(word,
                            **kwargs):
@@ -472,9 +483,10 @@ def wordcloud_map(df,
                   nuts_codes,
                   words,
                   word_counts,
-                  colour_func="random",
                   scale=1,
                   rendering_quality=1,
+                  colour_func="random",
+                  colour_hue=None,
                   min_font_size=4,
                   max_font_size=None,
                   max_words=200,
@@ -501,6 +513,15 @@ def wordcloud_map(df,
         Name of the column in the DataFrame containing the words.
     word_counts : str
         Name of the column in the DataFrame containing the word counts.
+    scale : float (default = 1)
+        The scale of the produced figure. The given value works as a multiplier
+        of matplotlib's default figure size. If ``scale = 1.0``, retains
+        default figure size. If ``scale > 1.0``, figure gets bigger by a factor
+        of scale (e.g. 1.5 means 50% bigger). If ``scale < 1.0``, figure gets
+        smaller by a factor of scale (e.g. 0.5 means 50% smaller).
+    rendering_quality : int (default = 1)
+        The rendering quality of the words in the wordcloud. Higher values
+        produce better-looking / sharper words but take longer to run.
     colour_func : str (default = "random")
         String indicating which colour function to use. Available values:
         ``"random"`` sets a random luminosity between 0 and 50 for each word
@@ -515,15 +536,9 @@ def wordcloud_map(df,
         luminosity = 50, the second most frequent receives luminosity = 40,
         and so on.
         Produces best results when ``relative_scaling = 0``.
-    scale : float (default = 1)
-        The scale of the produced figure. The given value works as a multiplier
-        of matplotlib's default figure size. If ``scale = 1.0``, retains
-        default figure size. If ``scale > 1.0``, figure gets bigger by a factor
-        of scale (e.g. 1.5 means 50% bigger). If ``scale < 1.0``, figure gets
-        smaller by a factor of scale (e.g. 0.5 means 50% smaller).
-    rendering_quality : int (default = 1)
-        The rendering quality of the words in the wordcloud. Higher values
-        produce better-looking / sharper words but take longer to run.
+    colour_hue : int or None (default = None)
+        Sets one specific hue in the HSL colour system for all regions.
+        Choose an integer between 0 and 360.
     min_font_size : int (default = 4)
         Smallest font size to use. Word placement will stop when there is no
         more room to fit words of this size.
@@ -610,6 +625,7 @@ def wordcloud_map(df,
             plot_contour(shaperecord, ax, bbox, resolution=border_sharpness)
             plot_region(mask=mask, data=data, ax=ax, bbox=bbox,
                         colour_func=colour_func,
+                        colour_hue=colour_hue,
                         rendering_quality=rendering_quality,
                         min_font_size=min_font_size,
                         max_font_size=max_font_size,

@@ -44,10 +44,10 @@ or
 Features and usage
 ------------------
 
-* **Create a wordcloud map** from data stored in a DataFrame object using `wordcloud_map() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#wordcloud_map>`_.
-* **Easily resize a map** by any desired scaling factor using `resize_map() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#resize_map>`_.
-* **Load dummy datasets** to test out the package's features using `load_companies() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#load_companies>`_.
-* **Calculate how unique a word is** to a particular region in comparison to other regions by calculating the Term Frequency — Inverse Document Frequency (TF-IDF) score for each word in each region using `calc_tfidf() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#calc_tfidf>`_.
+* **Create a wordcloud map** from data stored in a DataFrame object using `wordcloud_map() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#>`_.
+* **Easily resize a map** by any desired scaling factor using `resize_map() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#resize-map>`_.
+* **Load dummy datasets** to test out the package's features using `load_companies() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#load-companies>`_.
+* **Calculate how unique a word is** to a particular region in comparison to other regions by calculating the Term Frequency — Inverse Document Frequency (TF-IDF) score for each word in each region using `calc_tfidf() <https://gabzech.github.io/wordcloud_mapper/build/html/functions.html#calc-tfidf>`_.
 
 See the `documentation <https://GabZech.github.io/wordcloud_mapper>`_ for more information on how to use the package and its functions.
 

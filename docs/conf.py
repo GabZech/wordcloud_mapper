@@ -100,7 +100,7 @@ html_context = {
     "display_github": True, # Integrate GitHub
     "github_user": "GabZech", # Username
     "github_repo": "wordcloud_mapper", # Repo name
-    "github_version": "main", # Version
+    "github_version": "main/docs", # Version
     "conf_py_path": "/" # Path in the checkout to the docs root
 }
 

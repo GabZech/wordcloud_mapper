@@ -393,14 +393,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># check colour_hue input</span>
-    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">colour_hue</span> <span class="o">&lt;=</span> <span class="mi">360</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">colour_hue</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># set a random hue colour</span>
+        <span class="n">hue</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">colour_hue</span> <span class="o">&lt;=</span> <span class="mi">360</span><span class="p">:</span>
         <span class="n">hue</span> <span class="o">=</span> <span class="n">colour_hue</span>
     <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">colour_hue</span> <span class="o">&gt;</span> <span class="mi">360</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please choose an integer between 0 and 360&quot;</span><span class="p">)</span>
         <span class="k">return</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># set a random hue colour</span>
-        <span class="n">hue</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">colour_func_random</span><span class="p">(</span><span class="n">word</span><span class="p">,</span>
                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

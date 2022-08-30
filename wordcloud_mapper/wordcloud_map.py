@@ -318,14 +318,14 @@ def plot_region(mask,
 
     """
     # check colour_hue input
-    if 0 <= colour_hue <= 360:
+    if colour_hue == None:
+        # set a random hue colour
+        hue = randint(0, 360)
+    elif 0 <= colour_hue <= 360:
         hue = colour_hue
     elif 0 < colour_hue > 360:
         print("Please choose an integer between 0 and 360")
         return
-    else:
-        # set a random hue colour
-        hue = randint(0, 360)
 
     def colour_func_random(word,
                            **kwargs):

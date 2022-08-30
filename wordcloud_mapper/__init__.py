@@ -7,4 +7,4 @@ from .calc_tfidf import calc_tfidf
 
 __author__ = """Gabriel da Silva Zech"""
 __email__ = 'g.dev@posteo.net'
-__version__ = '0.1.1'
+__version__ = '0.2.0'

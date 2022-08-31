@@ -483,7 +483,7 @@ def wordcloud_map(df,
                   nuts_codes,
                   words,
                   word_counts,
-                  scale=1,
+                  scale=2.0,
                   rendering_quality=1,
                   colour_func="random",
                   colour_hue=None,
@@ -513,7 +513,7 @@ def wordcloud_map(df,
         Name of the column in the DataFrame containing the words.
     word_counts : str
         Name of the column in the DataFrame containing the word counts.
-    scale : float (default = 1)
+    scale : float (default = 2.0)
         The scale of the produced figure. The given value works as a multiplier
         of matplotlib's default figure size. If ``scale = 1.0``, retains
         default figure size. If ``scale > 1.0``, figure gets bigger by a factor

@@ -315,6 +315,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># filter by nuts code, sort and select the top words</span>
     <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">nuts_codes</span><span class="p">]</span> <span class="o">==</span> <span class="n">nuts_code</span><span class="p">]</span>\
+                <span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">words</span><span class="p">])</span>\
                 <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>\
                 <span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">max_words</span><span class="p">)</span>
     <span class="n">dic</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df_temp</span><span class="p">[</span><span class="n">words</span><span class="p">],</span> <span class="n">df_temp</span><span class="p">[</span><span class="n">word_counts</span><span class="p">]))</span>
@@ -568,7 +569,7 @@
                   <span class="n">relative_scaling</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                   <span class="n">prefer_horizontal</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
                   <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                  <span class="n">border_scale</span><span class="o">=</span><span class="s2">&quot;10M&quot;</span><span class="p">,</span>
+                  <span class="n">border_scale</span><span class="o">=</span><span class="s2">&quot;01M&quot;</span><span class="p">,</span>
                   <span class="n">border_sharpness</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                   <span class="n">nuts_year</span><span class="o">=</span><span class="mi">2021</span><span class="p">,</span>
                   <span class="n">coord_system</span><span class="o">=</span><span class="mi">3857</span><span class="p">,</span>
@@ -639,7 +640,7 @@
 <span class="sd">    repeat : bool (default = False)</span>
 <span class="sd">        Whether to repeat already-placed words until ``max_words`` or</span>
 <span class="sd">        ``min_font_size`` is reached.</span>
-<span class="sd">    border_scale : str (default = &quot;10M&quot;)</span>
+<span class="sd">    border_scale : str (default = &quot;01M&quot;)</span>
 <span class="sd">        How detailed the regions&#39; borders (i.e. the polygon shapefiles) should</span>
 <span class="sd">        be, based on the official NUTS values used to download shapefiles.</span>
 <span class="sd">        Smaller scales (e.g. &quot;03M&quot;) mean more detailed polygon shapes and thus</span>
@@ -694,11 +695,21 @@
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">shaperecord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shapefiles</span><span class="o">.</span><span class="n">shapeRecords</span><span class="p">()):</span>
         <span class="k">if</span> <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span> <span class="ow">in</span> <span class="n">unique_codes</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">get_mask</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">nuts_codes</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">word_counts</span><span class="p">,</span>
-                            <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span><span class="p">,</span> <span class="n">max_words</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span>
+                            <span class="n">nuts_codes</span><span class="p">,</span>
+                            <span class="n">words</span><span class="p">,</span>
+                            <span class="n">word_counts</span><span class="p">,</span>
+                            <span class="n">shaperecord</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">NUTS_ID</span><span class="p">,</span>
+                            <span class="n">max_words</span><span class="p">)</span>
             <span class="n">bbox</span> <span class="o">=</span> <span class="n">get_bbox_region</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">)</span>
-            <span class="n">plot_contour</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">border_sharpness</span><span class="p">)</span>
-            <span class="n">plot_region</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
+            <span class="n">plot_contour</span><span class="p">(</span><span class="n">shaperecord</span><span class="p">,</span>
+                         <span class="n">ax</span><span class="p">,</span>
+                         <span class="n">bbox</span><span class="p">,</span>
+                         <span class="n">resolution</span><span class="o">=</span><span class="n">border_sharpness</span><span class="p">)</span>
+            <span class="n">plot_region</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                        <span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span>
                         <span class="n">colour_func</span><span class="o">=</span><span class="n">colour_func</span><span class="p">,</span>
                         <span class="n">colour_hue</span><span class="o">=</span><span class="n">colour_hue</span><span class="p">,</span>
                         <span class="n">rendering_quality</span><span class="o">=</span><span class="n">rendering_quality</span><span class="p">,</span>

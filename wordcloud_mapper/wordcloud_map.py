@@ -240,6 +240,7 @@ def get_data(df,
     """
     # filter by nuts code, sort and select the top words
     df_temp = df.loc[df[nuts_codes] == nuts_code]\
+                .dropna(subset=[words])\
                 .sort_values(word_counts, ascending=False)\
                 .head(max_words)
     dic = dict(zip(df_temp[words], df_temp[word_counts]))
@@ -493,7 +494,7 @@ def wordcloud_map(df,
                   relative_scaling=0.5,
                   prefer_horizontal=0.9,
                   repeat=False,
-                  border_scale="10M",
+                  border_scale="01M",
                   border_sharpness=100,
                   nuts_year=2021,
                   coord_system=3857,
@@ -564,7 +565,7 @@ def wordcloud_map(df,
     repeat : bool (default = False)
         Whether to repeat already-placed words until ``max_words`` or
         ``min_font_size`` is reached.
-    border_scale : str (default = "10M")
+    border_scale : str (default = "01M")
         How detailed the regions' borders (i.e. the polygon shapefiles) should
         be, based on the official NUTS values used to download shapefiles.
         Smaller scales (e.g. "03M") mean more detailed polygon shapes and thus
@@ -619,11 +620,21 @@ def wordcloud_map(df,
     for i, shaperecord in enumerate(shapefiles.shapeRecords()):
         if shaperecord.record.NUTS_ID in unique_codes:
             mask = get_mask(shaperecord, resolution=100)
-            data = get_data(df, nuts_codes, words, word_counts,
-                            shaperecord.record.NUTS_ID, max_words)
+            data = get_data(df,
+                            nuts_codes,
+                            words,
+                            word_counts,
+                            shaperecord.record.NUTS_ID,
+                            max_words)
             bbox = get_bbox_region(shaperecord)
-            plot_contour(shaperecord, ax, bbox, resolution=border_sharpness)
-            plot_region(mask=mask, data=data, ax=ax, bbox=bbox,
+            plot_contour(shaperecord,
+                         ax,
+                         bbox,
+                         resolution=border_sharpness)
+            plot_region(mask=mask,
+                        data=data,
+                        ax=ax,
+                        bbox=bbox,
                         colour_func=colour_func,
                         colour_hue=colour_hue,
                         rendering_quality=rendering_quality,

@@ -8,7 +8,7 @@ History
 * First release on PyPI.
 
 
-0.2.0 (not published on PyPI yet)
+0.2.0 (2022-09-11)
 ---------------------------------
 
 New functionality:

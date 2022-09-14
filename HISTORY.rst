@@ -27,3 +27,7 @@ Parameters exposed to users:
 Others:
 
 * Change default coordination system when downloading shapefiles.
+
+X.X.X (tbf)
+
+* Delete calc_tfidf function to adhere to UNIX tradition of single-purpose tools that do one thing well.

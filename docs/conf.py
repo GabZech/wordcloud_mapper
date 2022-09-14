@@ -57,7 +57,7 @@ master_doc = 'index'
 from datetime import date
 current_year = date.today().year
 
-project = 'WordCloud_Mapper'
+project = 'wordcloud_mapper'
 copyright = f"{current_year}, Gabriel da Silva Zech"
 author = "Gabriel da Silva Zech"
 
@@ -147,7 +147,7 @@ latex_elements = {
 # [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'wordcloud_mapper.tex',
-     'WordCloud_Mapper Documentation',
+     'wordcloud_mapper Documentation',
      'Gabriel da Silva Zech', 'manual'),
 ]
 
@@ -157,8 +157,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'WordCloud_Mapper',
-     'WordCloud_Mapper Documentation',
+    (master_doc, 'wordcloud_mapper',
+     'wordcloud_mapper Documentation',
      [author], 1)
 ]
 
@@ -169,10 +169,10 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'WordCloud_Mapper',
-     'WordCloud_Mapper Documentation',
+    (master_doc, 'wordcloud_mapper',
+     'wordcloud_mapper Documentation',
      author,
-     'WordCloud_Mapper',
+     'wordcloud_mapper',
      'One line description of project.',
      'Miscellaneous'),
 ]

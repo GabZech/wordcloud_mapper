@@ -1,7 +1,7 @@
 Features and usage
 ===================
 
-1. To start using *WordCloud_Mapper*, import the package with::
+1. To start using *wordcloud_mapper*, import the package with::
 
     import wordcloud_mapper as wcm
 

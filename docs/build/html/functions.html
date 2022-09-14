@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>wordcloud_map() &mdash; WordCloud_Mapper 0.2.0 documentation</title>
+  <title>wordcloud_map() &mdash; wordcloud_mapper 0.2.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -29,7 +29,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> WordCloud_Mapper
+            <a href="index.html" class="icon icon-home"> wordcloud_mapper
           </a>
               <div class="version">
                 0.2.0
@@ -49,7 +49,6 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">wordcloud_map()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#resize-map">resize_map()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#load-companies">load_companies()</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#calc-tfidf">calc_tfidf()</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
@@ -63,7 +62,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">WordCloud_Mapper</a>
+          <a href="index.html">wordcloud_mapper</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -236,48 +235,6 @@ If <code class="docutils literal notranslate"><span class="pre">country</span> <
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt>DataFrame</dt><dd><p>The DataFrame corresponding to the chosen country.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="calc-tfidf">
-<h1>calc_tfidf()<a class="headerlink" href="#calc-tfidf" title="Permalink to this heading"></a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="wordcloud_mapper.calc_tfidf">
-<span class="sig-prename descclassname"><span class="pre">wordcloud_mapper.</span></span><span class="sig-name descname"><span class="pre">calc_tfidf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nuts_codes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word_counts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wordcloud_mapper/calc_tfidf.html#calc_tfidf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wordcloud_mapper.calc_tfidf" title="Permalink to this definition"></a></dt>
-<dd><p>Calculates the Term Frequency — Inverse Document Frequency (TF-IDF) score
-for each word in each region present in the dataframe and returns a
-dataframe with three extra columns containing the TF, IDF and TF-IDF values
-for each word.
-To produce accurate results, please only include regions of the same
-hierarchical level in the input dataframe.
-Explanation of the TF-IDF score: If a word appears very often in a region
-and does not do so in other regions, then that word receives a high tf-idf
-score.
-Conversely, if a word appears very often in a region but also does so in
-many other regions, then that word receives a low tf-idf score.
-Therefore, the tf-idf score here is a measure of how relevant or unique a
-word is to that particular region in comparison to other regions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>df</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame containing columns with NUTS codes, words and word counts.</p>
-</dd>
-<dt><strong>nuts_codes</strong><span class="classifier">str</span></dt><dd><p>Name of the column in the DataFrame containing the NUTS codes.</p>
-</dd>
-<dt><strong>words</strong><span class="classifier">str</span></dt><dd><p>Name of the column in the DataFrame containing the words.</p>
-</dd>
-<dt><strong>word_counts</strong><span class="classifier">str</span></dt><dd><p>Name of the column in the DataFrame containing the word counts.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>DataFrame</dt><dd><p>The same DataFrame as the input with three extra columns containing the
-TF, IDF and TF-IDF values for each word.</p>
 </dd>
 </dl>
 </dd>
